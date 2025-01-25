@@ -19,25 +19,25 @@ const SignIn: React.FC = () => {
         navigate("/patient-dashboard");
       }
     } else {
-      // Handle invalid usertype or authentication failure
+      // Handle invalid user type or authentication failure
       alert("Invalid user type or credentials");
     }
   };
 
   return (
-    <div className="flex bg-[#F9FAFB]">
+    <div className="flex bg-[#F9FAFB] flex-col lg:flex-row">
       
-      <div className="relative w-[45%] overflow-hidden">
-        <img src="/assets/images/Frame 5.png" alt="Frame" className="h-[720px] w-full" />
-        <img src="/assets/images/upper.png" alt="upper" className="absolute bottom-0 left-0 h-[500px] w-full object-cover" />
+      <div className="relative w-full lg:w-[45%] overflow-hidden">
+        <img src="/assets/images/Frame 5.png" alt="Frame" className="h-[400px] lg:h-[720px] w-full" />
+        <img src="/assets/images/upper.png" alt="upper" className="absolute bottom-0 left-0 h-[300px] lg:h-[500px] w-full object-cover" />
       </div>
 
       
-      <div className="w-[55%] flex flex-col justify-center items-center px-12">
-        <h1 className="text-4xl font-semibold text-[#3B9AB8] mb-8 text-center">Healthcare CMS</h1>
+      <div className="w-full lg:w-[55%] flex flex-col justify-center items-center px-6 lg:px-12 py-8 lg:py-0">
+        <h1 className="text-3xl lg:text-4xl font-semibold text-[#3B9AB8] mb-6 lg:mb-8 text-center">Healthcare CMS</h1>
 
         
-        <div className="flex gap-4 mb-8">
+        <div className="flex gap-4 mb-6 lg:mb-8 flex-wrap justify-center">
           <button
             className={`px-6 py-3 text-base font-semibold rounded-lg ${usertype === "doctor" ? "bg-[#3B9AB8] text-white" : "bg-gray-100 text-gray-600 border border-gray-300"}`}
             onClick={() => setUsertype("doctor")}
@@ -53,7 +53,7 @@ const SignIn: React.FC = () => {
         </div>
 
         
-        <div className="bg-white shadow-lg w-full max-w-md p-8 rounded-lg">
+        <div className="bg-white shadow-lg w-full max-w-md p-6 lg:p-8 rounded-lg">
           {usertype === "doctor" && (
             <div>
               <h2 className="text-2xl font-semibold text-[#3B9AB8] mb-6">Doctor Sign-In Form</h2>
