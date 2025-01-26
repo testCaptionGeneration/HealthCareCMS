@@ -7,6 +7,7 @@ import Navbar from './Components/Navbar'
 function App() {
   const [count, setCount] = useState(0)
 
+const App = () => {
   return (
     <>
       <div>
@@ -17,5 +18,15 @@ function App() {
     </>
   )
 }
+    <Router>
+      <Routes>
+        <Route path="/" element={<SignUp />} />
+        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
+        <Route path="/patient-dashboard" element={<PatientDashboard />} />
+      </Routes>
+    </Router>
+  );
+};
 
-export default App
+export default App;
