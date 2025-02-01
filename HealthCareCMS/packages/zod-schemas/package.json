@@ -1,0 +1,15 @@
+{
+    "name": "@mukesh/zod-schemas",
+    "version": "1.0.0",
+    "main": "index.ts",
+    "types": "index.ts",
+    "dependencies": {
+        "zod": "^3.24.1"
+    },
+
+    "scripts": {
+    "dev": "ts-node src/zd.ts", 
+    "build": "tsc",               
+    "start": "node dist/zd.js" 
+}
+}
