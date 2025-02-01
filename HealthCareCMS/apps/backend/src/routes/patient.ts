@@ -6,4 +6,4 @@ const router = express.Router();
 router.post("/signup", patientSignup);
 router.post("/signin", patientSignin);
 
-export const patientRoutes = router; 
+export const patientRoutes = router;
