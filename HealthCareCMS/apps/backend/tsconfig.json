@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
 
@@ -109,3 +110,17 @@
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   }
 }
+=======
+    "compilerOptions": {
+      "target": "ES6",
+      "module": "commonjs",
+      "outDir": "./dist",
+      "rootDir": "./src",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"]
+  }
+>>>>>>> a8c5ea3baeefaad8a6666b8890f58a23d4b880f5

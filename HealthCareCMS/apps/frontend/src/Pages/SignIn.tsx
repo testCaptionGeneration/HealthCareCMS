@@ -1,5 +1,9 @@
+// pages/SignIn.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import InputField from "../Components/InputField";
+import FormButton from "../Buttons/FormButton";
+import UserTypeSelector from "../Components/UserType";
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -7,89 +11,69 @@ const SignIn: React.FC = () => {
   const [usertype, setUsertype] = useState<"doctor" | "patient">("doctor");
   const navigate = useNavigate();
 
-  const handleSignIn = () => {
-    // Simulate user authentication
-    const storedUserType = localStorage.getItem("usertype");
-
-    if (storedUserType === usertype) {
-      // Redirect to the respective dashboard based on user type
-      if (usertype === "doctor") {
-        navigate("/doctor-dashboard");
-      } else if (usertype === "patient") {
-        navigate("/patient-dashboard");
+  const handleSignIn = async () => {
+    const credentials = { email, password };
+  
+    try {
+      const response = await fetch(`http://localhost:5000/api/${usertype}s/signin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        localStorage.setItem("token", data.token); // ✅ Store token in localStorage
+  
+        if (usertype === "doctor") {
+          navigate("/doctor-dashboard");
+        } else if (usertype === "patient") {
+          navigate("/patient-dashboard");
+        }
+      } else {
+        alert(data.message || "Login failed");
       }
-    } else {
-      // Handle invalid user type or authentication failure
-      alert("Invalid user type or credentials");
+    } catch (error) {
+      console.error("Error signing in:", error);
+      alert("An error occurred during sign-in.");
     }
   };
-
+  
   return (
-    <div className="flex bg-[#F9FAFB] flex-col lg:flex-row">
-      
-      <div className="relative w-full lg:w-[45%] overflow-hidden">
-        <img src="/assets/images/Frame 5.png" alt="Frame" className="h-[400px] lg:h-[720px] w-full" />
-        <img src="/assets/images/upper.png" alt="upper" className="absolute bottom-0 left-0 h-[300px] lg:h-[500px] w-full object-cover" />
+    <div className="flex flex-col md:flex-row bg-[#F9FAFB] min-h-screen">
+      <div className="relative w-full md:w-[45%] overflow-hidden bg-gradient-to-b from-[#3B9AB8] to-[#54B9ED] md:bg-none">
+        <img src="/assets/images/Frame 5.png" alt="Frame" className="h-[400px] md:h-[720px] w-full hidden md:block md:bg-blue-600" />
+        <img src="/assets/images/upper.png" alt="upper" className="absolute bottom-0 left-0 h-[300px] md:h-[500px] w-full object-cover hidden md:block" />
       </div>
 
-      
-      <div className="w-full lg:w-[55%] flex flex-col justify-center items-center px-6 lg:px-12 py-8 lg:py-0">
-        <h1 className="text-3xl lg:text-4xl font-semibold text-[#3B9AB8] mb-6 lg:mb-8 text-center">Healthcare CMS</h1>
+      <div className="w-full md:w-[55%] flex flex-col justify-center items-center px-8 md:px-12 py-8 md:py-0">
+        <h1 className="text-3xl md:text-4xl font-semibold text-[#3B9AB8] mb-6 md:mb-8 text-center">Healthcare CMS</h1>
 
-        
-        <div className="flex gap-4 mb-6 lg:mb-8 flex-wrap justify-center">
-          <button
-            className={`px-6 py-3 text-base font-semibold rounded-lg ${usertype === "doctor" ? "bg-[#3B9AB8] text-white" : "bg-gray-100 text-gray-600 border border-gray-300"}`}
-            onClick={() => setUsertype("doctor")}
-          >
-            Doctor Sign In
-          </button>
-          <button
-            className={`px-6 py-3 text-base font-semibold rounded-lg ${usertype === "patient" ? "bg-[#3B9AB8] text-white" : "bg-gray-100 text-gray-600 border border-gray-300"}`}
-            onClick={() => setUsertype("patient")}
-          >
-            Patient Sign In
-          </button>
-        </div>
+        <UserTypeSelector mode='signup'usertype={usertype} setUsertype={setUsertype} />
 
-        
-        <div className="bg-white shadow-lg w-full max-w-md p-6 lg:p-8 rounded-lg">
+        <div className="bg-white shadow-lg w-full max-w-md p-6 md:p-8 rounded-lg">
           {usertype === "doctor" && (
             <div>
               <h2 className="text-2xl font-semibold text-[#3B9AB8] mb-6">Doctor Sign-In Form</h2>
               <form className="flex flex-col gap-4">
-                {/* Email field */}
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Email</label>
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#54B9ED] focus:outline-none"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Password</label>
-                  <input
-                    type="password"
-                    placeholder="Enter your password"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#54B9ED] focus:outline-none"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-
-                
-                <button
-                  type="button"
-                  onClick={handleSignIn}
-                  className="w-full h-12 bg-[#3B9AB8] text-white rounded-lg flex justify-center items-center"
-                >
-                  Sign In as Doctor
-                </button>
+                <InputField
+                  label="Email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                />
+                <InputField
+                  label="Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                />
+                <FormButton onClick={handleSignIn} text="Sign In as Doctor" />
               </form>
             </div>
           )}
@@ -98,38 +82,21 @@ const SignIn: React.FC = () => {
             <div>
               <h2 className="text-2xl font-semibold text-[#3B9AB8] mb-6">Patient Sign-In Form</h2>
               <form className="flex flex-col gap-4">
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Email</label>
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#54B9ED] focus:outline-none"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-
-                
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Password</label>
-                  <input
-                    type="password"
-                    placeholder="Enter your password"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#54B9ED] focus:outline-none"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-
-                
-                <button
-                  type="button"
-                  onClick={handleSignIn}
-                  className="w-full h-12 bg-[#3B9AB8] text-white rounded-lg flex justify-center items-center"
-                >
-                  Sign In as Patient
-                </button>
+                <InputField
+                  label="Email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                />
+                <InputField
+                  label="Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                />
+                <FormButton onClick={handleSignIn} text="Sign In as Patient" />
               </form>
             </div>
           )}
