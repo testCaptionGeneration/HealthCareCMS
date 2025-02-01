@@ -3,16 +3,31 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.ts"
+
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "description": "",
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "@mukesh/zod-schemas": "^1.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "hono": "^4.6.19",
+    "mongoose": "^8.9.5"
+  },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250109.0",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.10",
-    "typescript": "^5.7.3"
+    "nodemon": "^3.1.9",
+    "typescript": "^5.7.3",
+    "wrangler": "^3.101.0"
   }
 }

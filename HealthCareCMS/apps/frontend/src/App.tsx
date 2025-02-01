@@ -1,32 +1,25 @@
-import { useState } from 'react'
-import Dashboard from './Components/Dashboard'
-import Med from './Components/Med'
-import Upper from './Components/Upper'
-import './App.css'
-import Navbar from './Components/Navbar'
-function App() {
-  const [count, setCount] = useState(0)
 
-const App = () => {
+import Dashboard from './Pages/Dashboard'
+import Priscription from './Pages/Priscription'
+
+import {BrowserRouter ,Routes,Route} from"react-router-dom"
+import SignUp from './Pages/SignUp' 
+import SignIn from './Pages/SignIn'
+
+
+const App :React.FC= () => {
   return (
-    <>
-      <div>
-      
-
-      <Dashboard/>
-      </div>
-    </>
-  )
-}
-    <Router>
+  <>
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<SignUp />} />
         <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
-        <Route path="/patient-dashboard" element={<PatientDashboard />} />
+        <Route path="/patient-dashboard" element={<Dashboard/>} />
+        <Route path="/patient-dashboard/priscription" element={<Priscription/>}/>
       </Routes>
-    </Router>
-  );
-};
+    </BrowserRouter>
+  </>
+  )
+}
 
 export default App;

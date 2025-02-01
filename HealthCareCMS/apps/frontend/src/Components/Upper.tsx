@@ -18,6 +18,17 @@ interface Medication {
       experience: "10 years experience",
       buttonText: "Prescription",
     },
+    {
+      name: "Jason Shatsky",
+      specialty: "Specialist",
+      experience: "10 years experience",
+      buttonText: "Prescription",
+    },{
+      name: "Jason Shatsky",
+      specialty: "Specialist",
+      experience: "10 years experience",
+      buttonText: "Prescription",
+    },
   ];
 
 const Upper:React.FC=()=>{
