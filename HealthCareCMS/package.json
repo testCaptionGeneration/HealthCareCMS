@@ -1,5 +1,5 @@
 {
-  "name": "HealthCareCMS",
+ "name": "HealthCareCMS",
   "private": true,
   "scripts": {
     "build": "tsc -b && turbo build",
@@ -8,11 +8,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-<<<<<<< HEAD
-    "nodemon": "^3.1.9",
-=======
     "@types/node": "^22.12.0",
->>>>>>> a8c5ea3baeefaad8a6666b8890f58a23d4b880f5
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
     "turbo": "^2.3.4",

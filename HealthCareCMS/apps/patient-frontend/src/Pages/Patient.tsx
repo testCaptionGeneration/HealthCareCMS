@@ -1,5 +1,14 @@
 
 import React from "react";
+import {useState,useEffect} from "react"
+import axios from"axios"
+import {z} from 'zod'
+
+export const PatientType=z.object({
+  
+})
+
+
 
 interface Doctor {
   name: string;
@@ -38,19 +47,29 @@ const doctors: Doctor[] = [
   ];
 
 
-
+export type PatientType=PatientType
 
 
   const Patient: React.FC = () => {
+
+   const [pateint,setPatient]=useState<<Array<PatientType>({});
+
+   co
+
+
+
+
+
+
     return (
       <>
         <div className="mx-6 my-6 min-h-screen">
           <div className="flex flex-col gap-4 w-full bg-white rounded-[31px] shadow-lg border border-white p-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {doctors.map((doctor, index) => (
-                <div
+                <div 
                   key={index}
-                  className="bg-white rounded-[14px] shadow-md hover:shadow-lg transition-shadow duration-200 p-4 flex flex-col items-start h-40 w-full max-w-[300px]"
+                  className="flex-col justify-center bg-white rounded-[14px] shadow-md hover:shadow-lg transition-shadow duration-200 p-4 flex   h-40 w-full max-w-[300px]"
                 >
                   <div className="flex items-center space-x-4 w-full">
                     <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center text-white text-lg font-bold">
@@ -61,6 +80,10 @@ const doctors: Doctor[] = [
                       <h3 className="text-sm text-gray-600">{doctor.age} years</h3>
                     </div>
                   </div>
+                  <button className="bg-[#3a99b7] text-white text-sm font-medium 
+                  my-3 py-2 px-4 rounded mx-auto  hover:bg-blue-600">
+               click
+            </button>
                 </div>
               ))}
             </div>
