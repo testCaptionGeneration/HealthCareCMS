@@ -1,41 +1,16 @@
+
 {
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-<<<<<<< HEAD
-    "dev": "nodemon src/index.ts"
-
-=======
     "dev": "nodemon --watch src --exec ts-node src/index.ts"
->>>>>>> a8c5ea3baeefaad8a6666b8890f58a23d4b880f5
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
-<<<<<<< HEAD
-  "description": "",
-  "dependencies": {
-    "@hono/node-server": "^1.13.7",
-    "@mukesh/zod-schemas": "^1.0.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "hono": "^4.6.19",
-    "mongoose": "^8.9.5"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250109.0",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.10.10",
-    "nodemon": "^3.1.9",
-    "typescript": "^5.7.3",
-    "wrangler": "^3.101.0"
-  }
-=======
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
@@ -57,5 +32,4 @@
     "undici-types": "^6.20.0"
   },
   "description": ""
->>>>>>> a8c5ea3baeefaad8a6666b8890f58a23d4b880f5
 }
