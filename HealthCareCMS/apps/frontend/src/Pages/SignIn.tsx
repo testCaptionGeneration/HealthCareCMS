@@ -11,20 +11,37 @@ const SignIn: React.FC = () => {
   const [usertype, setUsertype] = useState<"doctor" | "patient">("doctor");
   const navigate = useNavigate();
 
-  const handleSignIn = () => {
-    const storedUserType = localStorage.getItem("usertype");
-
-    if (storedUserType === usertype) {
-      if (usertype === "doctor") {
-        navigate("/doctor-dashboard");
-      } else if (usertype === "patient") {
-        navigate("/patient-dashboard");
+  const handleSignIn = async () => {
+    const credentials = { email, password };
+  
+    try {
+      const response = await fetch(`http://localhost:5000/api/${usertype}s/signin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        localStorage.setItem("token", data.token); // ✅ Store token in localStorage
+  
+        if (usertype === "doctor") {
+          navigate("/doctor-dashboard");
+        } else if (usertype === "patient") {
+          navigate("/patient-dashboard");
+        }
+      } else {
+        alert(data.message || "Login failed");
       }
-    } else {
-      alert("Invalid user type or credentials");
+    } catch (error) {
+      console.error("Error signing in:", error);
+      alert("An error occurred during sign-in.");
     }
   };
-
+  
   return (
     <div className="flex flex-col md:flex-row bg-[#F9FAFB] min-h-screen">
       <div className="relative w-full md:w-[45%] overflow-hidden bg-gradient-to-b from-[#3B9AB8] to-[#54B9ED] md:bg-none">
@@ -35,7 +52,7 @@ const SignIn: React.FC = () => {
       <div className="w-full md:w-[55%] flex flex-col justify-center items-center px-8 md:px-12 py-8 md:py-0">
         <h1 className="text-3xl md:text-4xl font-semibold text-[#3B9AB8] mb-6 md:mb-8 text-center">Healthcare CMS</h1>
 
-        <UserTypeSelector usertype={usertype} setUsertype={setUsertype} />
+        <UserTypeSelector mode='signup'usertype={usertype} setUsertype={setUsertype} />
 
         <div className="bg-white shadow-lg w-full max-w-md p-6 md:p-8 rounded-lg">
           {usertype === "doctor" && (

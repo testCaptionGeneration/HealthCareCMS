@@ -3,10 +3,7 @@ import { doctorSignup, doctorSignin } from "../controller/doctorController";
 
 const router = express.Router();
 
-
 router.post("/signup", doctorSignup);
-
-
 router.post("/signin", doctorSignin);
 
-export default router;
+export const doctorRoutes = router; 

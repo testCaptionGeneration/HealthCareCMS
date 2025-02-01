@@ -10,7 +10,9 @@ const SignUp: React.FC = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [position, setPosition] = useState(""); 
+  const [position, setPosition] = useState("");
+  const[dof,setdof]=useState("")
+  const[hospital,sethospital]=useState("") 
   const navigate = useNavigate();
 
   const handleSignUp = () => {
@@ -28,7 +30,7 @@ const SignUp: React.FC = () => {
       <div className="w-full md:w-[55%] flex flex-col justify-center items-center px-8 md:px-12 py-8 md:py-0">
         <h1 className="text-3xl md:text-4xl font-semibold text-[#3B9AB8] mb-6 md:mb-8 text-center">Healthcare CMS</h1>
 
-        <UserTypeSelector usertype={usertype} setUsertype={setUsertype} />
+        <UserTypeSelector mode='signup'usertype={usertype} setUsertype={setUsertype} />
 
         <div className="bg-white shadow-lg w-full max-w-md p-8 rounded-lg">
           {usertype === "doctor" && (
@@ -63,6 +65,20 @@ const SignUp: React.FC = () => {
                   onChange={(e) => setPosition(e.target.value)}
                   placeholder="Enter Your Position (e.g., General Practitioner)"
                 />
+                <InputField
+                  label="Education"
+                  type="text"
+                  value={dof}
+                  onChange={(e) => setdof(e.target.value)}
+                  placeholder="Enter Your Education (e.g.,MBBS)"
+                />
+                <InputField
+                  label="Hospital"
+                  type="text"
+                  value={hospital}
+                  onChange={(e) => sethospital(e.target.value)}
+                  placeholder="Enter Your Education (e.g.,MBBS)"
+                />
                 <FormButton onClick={handleSignUp} text="Sign Up as Doctor" />
               </form>
             </div>
@@ -92,6 +108,13 @@ const SignUp: React.FC = () => {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="Enter Your Phone Number"
+                />
+                <InputField
+                  label="Hospital"
+                  type="text"
+                  value={hospital}
+                  onChange={(e) => sethospital(e.target.value)}
+                  placeholder="Enter Your Desired Hospital"
                 />
                 <FormButton onClick={handleSignUp} text="Sign Up as Patient" />
               </form>

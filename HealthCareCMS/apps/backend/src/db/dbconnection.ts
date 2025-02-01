@@ -2,7 +2,10 @@ import mongoose from "mongoose";
 
 const connectDB = async (): Promise<void> => {
   try {
-    const mongoURL = "mongodb+srv://mukeshpaliwal:4IFhHJmDCAhPwMMm@firstdb.5oexb.mongodb.net/HealthCareCMS"; 
+    const mongoURL: string = process.env.dburl as string; 
+    if (!mongoURL) {
+      throw new Error("MongoDB URL is not defined in environment variables.");
+    }
     await mongoose.connect(mongoURL);
     console.log("MongoDB connected successfully to HealthCareCMS");
   } catch (error) {
