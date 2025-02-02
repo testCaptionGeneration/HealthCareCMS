@@ -1,9 +1,11 @@
 import express from "express";
 import { doctorSignup, doctorSignin } from "../controller/doctorController";
+import { validateRequest } from "../Middleware/ValidateRequest";
+import { doctorSignupSchema, signinSchema } from "../../../shared/validation"; 
 
-const router = express.Router();
+const doctorrouter = express.Router();
 
-router.post("/signup", doctorSignup);
-router.post("/signin", doctorSignin);
+doctorrouter.post("/signup", validateRequest(doctorSignupSchema), doctorSignup);
+doctorrouter.post("/signin", validateRequest(signinSchema), doctorSignin);
 
-export const doctorRoutes = router;
+export default doctorrouter;

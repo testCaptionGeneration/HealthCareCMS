@@ -3,15 +3,14 @@ import React from "react";
 interface UserTypeSelectorProps {
   usertype: "doctor" | "patient";
   setUsertype: React.Dispatch<React.SetStateAction<"doctor" | "patient">>;
-  mode: "signup" | "signin"; 
+  mode: "signup" | "signin";
 }
 
 const UserTypeSelector: React.FC<UserTypeSelectorProps> = ({ usertype, setUsertype, mode }) => {
   const getButtonText = (type: "doctor" | "patient") => {
-    if (mode === "signup") {
-      return `${type.charAt(0).toUpperCase() + type.slice(1)} Sign Up`;
-    }
-    return `${type.charAt(0).toUpperCase() + type.slice(1)} Sign In`;
+    return mode === "signup"
+      ? `${type === "doctor" ? "Doctor" : "Patient"} Sign Up`
+      : `${type === "doctor" ? "Doctor" : "Patient"} Sign In`;
   };
 
   return (

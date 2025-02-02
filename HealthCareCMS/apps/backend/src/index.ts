@@ -1,15 +1,13 @@
-
 import express from "express";
 import cors from "cors";
 import connectDB from "./db/dbconnection";
-import { doctorRoutes } from "./routes/doctor";
-import { patientRoutes } from "./routes/patient";
+import doctorrouter from "./routes/doctor";  
+import patientrouter from "./routes/patient";  
 import dotenv from "dotenv";
 
 dotenv.config(); 
 
 const app = express();
-
 
 app.use(
   cors({
@@ -19,16 +17,12 @@ app.use(
   })
 );
 
-
 app.use(express.json());
-
 
 connectDB();
 
-
-app.use("/api/doctors", doctorRoutes);
-app.use("/api/patients", patientRoutes);
-
+app.use("/api/doctors", doctorrouter);  
+app.use("/api/patients", patientrouter);  
 
 const PORT = process.env.PORT || 5000; 
 app.listen(PORT, () => {
