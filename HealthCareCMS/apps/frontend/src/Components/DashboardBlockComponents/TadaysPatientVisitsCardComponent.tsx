@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "../Inputs/Button";
-import { CreatePatient } from "../CreatePatient";
+import { CreatePatient } from "../../Creation/CreatePatient";
 import { CardWrapper } from "../Wrapper/CardWrapper";
 
 export const TodayPatientCard = () => {

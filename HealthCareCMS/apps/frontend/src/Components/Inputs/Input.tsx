@@ -5,11 +5,13 @@ export const Input = ({
   type,
   refrence,
   size = "medium", 
+  value
 }: {
-  placeholder: string;
+  placeholder?: string;
   type: string;
   refrence?: Ref<HTMLInputElement>;
   size?: "small" | "medium" | "large"; 
+  value?:any;
 }) => {
   
   const sizeClass =
@@ -21,7 +23,8 @@ export const Input = ({
         ref={refrence}
         type={type}
         placeholder={placeholder}
-        className={`${sizeClass} px-4 py-2 m-3 shadow-md rounded-md`}
+        className={`${sizeClass} px-4 py-2 m-3 shadow-md rounded-md focus:outline-none`}
+        value={value}
       />
     </div>
   );

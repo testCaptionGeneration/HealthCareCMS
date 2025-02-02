@@ -24,7 +24,7 @@ const variantStyles = {
 export const Button = (props: ButtonInterface) => {
   return (
     <button
-      className={`flex items-center justify-center gap-2 ${sizeStyle[props.size]} ${variantStyles[props.variant]} cursor-pointer`} onClick={props.onClick}
+      className={`flex items-center justify-center gap-1   ${sizeStyle[props.size]} ${variantStyles[props.variant]} cursor-pointer`} onClick={props.onClick}
     >
       {props.startIcon && <span className="flex items-center">{props.startIcon}</span>}
       <span className="font-semibold">{props.title}</span>
