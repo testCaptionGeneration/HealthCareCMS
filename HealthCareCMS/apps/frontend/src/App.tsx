@@ -3,6 +3,7 @@ import SignUp from "./Pages/SignUp";
 import SignIn from "./Pages/SignIn";
 import DoctorDashboard from "./Dashboard/DoctorDashboard";
 import PatientDashboard from "./Dashboard/PatientDashboard";
+import ProtectedRoute from "./Protected/ProtectedRoute";  // Import your ProtectedRoute component
 
 const App = () => {
   return (
@@ -10,8 +11,16 @@ const App = () => {
       <Routes>
         <Route path="/" element={<SignUp />} />
         <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
-        <Route path="/patient-dashboard" element={<PatientDashboard />} />
+        
+        
+        <Route element={<ProtectedRoute />}>
+          <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
+        </Route>
+
+        {/* Protected Route for Patient Dashboard */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/patient-dashboard" element={<PatientDashboard />} />
+        </Route>
       </Routes>
     </Router>
   );
