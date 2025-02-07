@@ -12,10 +12,10 @@ export const Dashboard=()=> {
       <NavbarComponent />
 
       <div className='flex justify-center'>
-        <div className='grid xl:grid-cols-2 lg:grid-cols-1 xl:gap-10 xl:fixed '>
+        <div className='grid xl:grid-cols-2 lg:grid-cols-2 xl:gap-10 xl:fixed '>
           <div >
-            <ViewAnalysisCard />
             <TodayPatientCard />
+            <ViewAnalysisCard />
           </div>
           <div>
             <PatientSeverityComponent/>

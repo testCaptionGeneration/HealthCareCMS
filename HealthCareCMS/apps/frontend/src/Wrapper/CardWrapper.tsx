@@ -1,9 +1,9 @@
 import { ReactNode } from "react";
 
-export const CardWrapper = ({ children }: { children: ReactNode }) => {
+export const CardWrapper = ({ children, size }: { children: ReactNode, size?:number }) => {
   return (
     <div
-      className="
+      className={`
         relative 
         w-full 
         max-w-[670px] 
@@ -19,7 +19,7 @@ export const CardWrapper = ({ children }: { children: ReactNode }) => {
         rounded-2xl 
         border 
         border-slate-300
-      "
+      `}
     >
       {children}
     </div>

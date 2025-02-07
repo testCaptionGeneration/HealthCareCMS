@@ -1,11 +1,10 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { Input } from '../Components/Inputs/Input'
 import { CloseIcon } from '../Icons/CloseIcon'
 import { Button } from '../Components/Inputs/Button'
 import { BACKEND_URL } from '../config'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 
@@ -29,7 +28,7 @@ export const CreatePatient = ({ open, setOpen }: { open: boolean, setOpen: (valu
         const patientSeverity = patientSeverityRef.current?.value;
         const patientPhoneNumber = patientPhoneNumberRef.current?.value;
         const patientBirthDate = patientBirthDateRef.current?.value;
-
+        const date = Date.now();
 
         console.log(patientName, patientAge, patientDisease, patientPhoneNumber, patientGender, patientSeverity, patientBirthDate);
         try {
@@ -40,7 +39,8 @@ export const CreatePatient = ({ open, setOpen }: { open: boolean, setOpen: (valu
                 disease: patientDisease,
                 severity: patientSeverity,
                 number: patientPhoneNumber,
-                birth: patientBirthDate
+                birth: patientBirthDate,
+                date: date
             })
 
             console.log(response);

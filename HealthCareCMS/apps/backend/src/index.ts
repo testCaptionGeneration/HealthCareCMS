@@ -9,33 +9,33 @@ const Router = express.Router();
 
 // src/types/env.d.ts
 declare global {
-    namespace NodeJS {
-      interface ProcessEnv {
-        MONGO_URL: string;
-      }
-    }
-    namespace Express {
-        interface Request {
-            userId: String
-        }
+  namespace NodeJS {
+    interface ProcessEnv {
+      MONGO_URL: string;
     }
   }
-  
-  export {};
-  
+  namespace Express {
+    interface Request {
+      userId: String
+    }
+  }
+}
+
+export { };
+
 
 import { PatientModel } from "./db";
 import { doctorRouter } from "./Routes/Doctor";
 app.use(express.json())
 app.use(cors());
 
-const db_url=process.env.MONGO_URL;
-app.use('/cms/v1/doctor',doctorRouter);
+const db_url = process.env.MONGO_URL;
+app.use('/cms/v1/doctor', doctorRouter);
 
-async function main(){
-    await mongoose.connect(db_url).then(()=>console.log("Connection eshatblished with database")).then(()=>console.log("Connection eshatablished with database")).catch((e)=>console.log(e));
+async function main() {
+  await mongoose.connect(db_url).then(() => console.log("Connection eshatablished with database")).catch((e) => console.log(e));
 
-    app.listen(process.env.PORT,()=>console.log(`App listening to ${process.env.PORT}`));
+  app.listen(process.env.PORT, () => console.log(`App listening to ${process.env.PORT}`));
 }
 main();
 

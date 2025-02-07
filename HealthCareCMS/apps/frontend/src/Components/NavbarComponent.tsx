@@ -8,11 +8,11 @@ export const NavbarComponent = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div>
+    <div >
 
       <div className="hidden sm:flex justify-center mt-2">
         <div className="w-full max-w-[1400px] h-[70px] flex justify-between items-center p-4 shadow-md rounded-lg border border-slate-300">
-    
+
           <div className="flex items-center text-lg font-bold text-[#3B9AB8]">
             <LogoIcon size={28.84} />
             <span className="ml-2">HealthCareCMS</span>
@@ -46,9 +46,8 @@ export const NavbarComponent = () => {
 
 
         <div
-          className={`fixed top-0 left-0 h-full bg-white shadow-md transform ${
-            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } transition-transform duration-300 z-50 w-[250px]`}
+          className={`fixed top-0 left-0 h-full bg-white shadow-md transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+            } transition-transform duration-300 z-50 w-[250px]`}
         >
           <div className="p-4 flex items-center justify-between border-b border-slate-300">
             <span className="text-lg font-bold text-[#3B9AB8]">Menu</span>

@@ -1,5 +1,5 @@
 import { Button } from "../Inputs/Button"
-import { CardWrapper } from "../Wrapper/CardWrapper"
+import { CardWrapper } from "../../Wrapper/CardWrapper"
 export const ViewAnalysisCard = () => {
     return <CardWrapper>
             <div className="p-3">

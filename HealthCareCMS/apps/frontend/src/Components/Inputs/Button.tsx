@@ -4,9 +4,9 @@ interface ButtonInterface {
   size: "lg" | "sm" | "md";
   startIcon?: ReactElement;
   endIcon?: ReactElement;
-  title: string;
+  title?: string;
   variant: "primary" | "secondary";
-  onClick?:()=>void;
+  onClick?: () => void;
 }
 
 const sizeStyle = {
