@@ -1,18 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signinSchema } from "../../../shared/validation"; 
-import { toast } from "react-toastify"; 
-import { ZodError } from "zod";  
+import { signinSchema } from "../../../shared/validation";
+import { toast } from "react-toastify";
+import { ZodError } from "zod";
 import InputField from "../Components/InputField";
 import UserTypeSelector from "../Components/UserType";
 import FormButton from "../Buttons/FormButton";
+import { LogoIcon } from "../Icons/LogoIcon";
 
 const SignIn: React.FC = () => {
-  const [formData, setFormData] = useState<{ 
-    email: string; 
-    password: string; 
-    usertype: "doctor" | "patient"; 
-  }>({ email: "", password: "", usertype: "doctor" });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    usertype: "doctor" as "doctor" | "patient",
+  });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
@@ -72,44 +73,64 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="flex bg-[#F9FAFB]">
-      <div className="relative w-[45%] overflow-hidden">
-        <img src="/assets/images/Frame 5.png" alt="Frame" className="h-[720px] w-full" />
-        <img src="/assets/images/upper.png" alt="upper" className="absolute bottom-0 left-0 h-[500px] w-full object-cover" />
+    <div className="flex bg-[#F9FAFB] min-h-screen fixed ">
+      <div className="relative w-[45%] h-[950px]">
+        <div className="absolute inset-0">
+          <img
+            src="/assets/images/Signup_bg.png"
+            alt="Frame"
+            className="min-h-full min-w-screen object-cover opacity-50"
+          />
+        </div>
       </div>
 
-      <div className="w-[55%] flex flex-col justify-center items-center px-12">
-        <h1 className="text-4xl font-semibold text-[#3B9AB8] mb-8 text-center">Healthcare CMS</h1>
+      <div className="min-w-screen flex flex-col justify-center items-center px-12 absolute py-10 ">
+        <div className="flex items-center justify-center mb-2">
+          <LogoIcon size={28.85} />
+          <h1 className="lg:text-4xl sm:text-2xl font-semibold text-[#3B9AB8] text-center">Healthcare CMS</h1>
+        </div>
 
-        <UserTypeSelector 
-          usertype={formData.usertype} 
-          setUsertype={(type) => setFormData((prev) => ({ ...prev, usertype: type as "doctor" | "patient" }))} 
-          mode="signin" 
+        <div className="mb-4 text-center">
+          <p className="lg:text-xl sm:text-sm">
+            Don’t have an account?{" "}
+            <button
+              onClick={() => navigate("/sign-up")}
+              className="text-[#3B9AB8] font-normal hover:scale-110 hover:underline cursor-pointer"
+            >
+              Sign Up here
+            </button>
+          </p>
+        </div>
+
+        <UserTypeSelector
+          usertype={formData.usertype}
+          setUsertype={(type) => setFormData((prev) => ({ ...prev, usertype: type as "doctor" | "patient" }))}
+          mode="signin"
         />
 
         <div className="bg-white shadow-lg w-full max-w-md p-8 rounded-lg">
-          <form className="flex flex-col gap-6">
-            <InputField 
-              label="Email" 
-              type="email" 
-              name="email" 
-              value={formData.email} 
-              onChange={handleChange} 
-              placeholder="Enter your email" 
+          <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
+            <InputField
+              label="Email"
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
             />
-            {errors.email && <span className="text-red-500 text-sm">{errors.email}</span>}
+            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
 
-            <InputField 
-              label="Password" 
-              type="password" 
-              name="password" 
-              value={formData.password} 
-              onChange={handleChange} 
-              placeholder="Enter your password" 
+            <InputField
+              label="Password"
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
             />
-            {errors.password && <span className="text-red-500 text-sm">{errors.password}</span>}
+            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
 
-            <FormButton onClick={handleSignIn} text={`Sign In as ${formData.usertype === "doctor" ? "Doctor" : "Patient"}`} />
+            <FormButton onClick={handleSignIn} text={`Sign In as ${formData.usertype.charAt(0).toUpperCase() + formData.usertype.slice(1)}`} />
           </form>
         </div>
       </div>

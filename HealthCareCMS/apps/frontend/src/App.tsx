@@ -2,8 +2,8 @@ import './App.css'
 import { PrescriptionComponent } from './pages/Prescription'
 import { Dashboard } from './pages/Dashboard'
 import { BrowserRouter,Routes,Route } from 'react-router-dom'
-import SignUp from "./pages/SignIn";
-import SignIn from "./pages/SignUp";
+import SignUp from "./pages/SignUp";
+import SignIn from "./pages/SignIn";
 import DoctorDashboard from "./Dashboard/DoctorDashboard";
 import PatientDashboard from "./Dashboard/PatientDashboard";
 import ProtectedRoute from "./Protected/ProtectedRoute";

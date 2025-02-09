@@ -6,6 +6,7 @@ import { ZodError } from "zod";
 import InputField from "../Components/InputField";
 import UserTypeSelector from "../Components/UserType";
 import FormButton from "../Buttons/FormButton";
+import { LogoIcon } from "../Icons/LogoIcon";
 
 const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -74,25 +75,25 @@ const SignUp: React.FC = () => {
       <div className="relative w-[45%] h-[950px]">
         <div className="absolute inset-0">
           <img
-            src="/assets/images/Frame 5.png"
+            src="/assets/images/Signup_bg.png"
             alt="Frame"
-            className="h-full w-full object-cover"
+            className="min-h-full min-w-screen object-cover opacity-50 "
           />
         </div>
         <div className="absolute bottom-0 left-0 w-full h-[635px]">
-          <img
-            src="/assets/images/upper.png"
-            alt="upper"
-            className="h-full w-full object-cover"
-          />
+          
         </div>
       </div>
 
-      <div className="w-[55%] flex flex-col justify-center items-center px-12">
-        <h1 className="text-4xl font-semibold text-[#3B9AB8] mb-6 text-center">Healthcare CMS</h1>
-
+      <div className="min-w-screen flex flex-col justify-center items-center px-12 absolute py-5">
+        <div className="flex items-center justify-center mb-2">
+          <LogoIcon size={28.85}/>
+        
+        <h1 className="lg:text-4xl sm:text-2xl font-semibold text-[#3B9AB8]  text-center">Healthcare CMS</h1>
+        
+        </div>
         <div className="mb-4 text-center">
-          <p className="text-2xl">
+          <p className="lg:text-xl sm:sm">
             Already have an account?{" "}
             <button
               onClick={() => navigate("/sign-in")}
