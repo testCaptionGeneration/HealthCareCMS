@@ -8,7 +8,7 @@ import { ViewAnalysisCard } from '../Components/DashboardBlockComponents/ViewAna
 export const Dashboard=()=> {
 
   return (
-    <div className='text-slate-700 min-h-screen xl:fixed  min-w-screen'>
+    <div className='text-slate-700 min-h-screen xl:fixed  min-w-screen relative bg-gradient-to-t from-gray-800 to-gray-100 '>
       <NavbarComponent />
 
       <div className='flex justify-center'>
@@ -23,7 +23,6 @@ export const Dashboard=()=> {
           </div>
         </div>
       </div>
-
 
 
 
