@@ -1,25 +1,17 @@
+import './App.css'
+import { PrescriptionComponent } from './pages/Prescription'
+import { Dashboard } from './pages/Dashboard'
+import { BrowserRouter,Routes,Route } from 'react-router-dom'
 
-import Dashboard from './Pages/Dashboard'
-import Priscription from './Pages/Priscription'
+function App() {
 
-import {BrowserRouter ,Routes,Route} from"react-router-dom"
-import SignUp from './Pages/SignUp' 
-import SignIn from './Pages/SignIn'
-
-
-const App :React.FC= () => {
-  return (
-  <>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<SignUp />} />
-        <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/patient-dashboard" element={<Dashboard/>} />
-        <Route path="/patient-dashboard/priscription" element={<Priscription/>}/>
-      </Routes>
-    </BrowserRouter>
-  </>
-  )
+  return <BrowserRouter>
+    <Routes>
+      <Route path='/cms/v1/doctor/dashboard' element={<Dashboard/>}/>
+      <Route path='/cms/v1/doctor/patient/prescription/:userId' element={<PrescriptionComponent/>}/>
+    </Routes>
+  </BrowserRouter>
+  
 }
 
 export default App;

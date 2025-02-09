@@ -1,3 +1,5 @@
+import { Button } from "./Button";
+
 interface Medication {
     name: string;
     specialty: string;
@@ -51,15 +53,11 @@ const Upper:React.FC=()=>{
                 <p className="text-sm text-gray-600">{medication.experience}</p>
               </div>
             </div>
-            <button className="bg-[#3a99b7] text-white text-sm font-medium py-2 px-4 rounded hover:bg-blue-600">
-              {medication.buttonText}
-            </button>
+            <Button title="Priscription" size="md" variant="secondary"/>
           </div>
         ))}
         <div className="flex justify-center items-center  md-4">
-      <button className=" mx-auto bg-[#3a99b7] text-white text-sm font-medium h-6 px-8 rounded hover:bg-blue-600 ">
-        View
-      </button>
+        <Button title="View More" size="md" variant="secondary"/>
       </div>
       </div>
       

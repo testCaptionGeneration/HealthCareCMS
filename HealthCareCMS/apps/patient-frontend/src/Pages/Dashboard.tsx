@@ -1,10 +1,10 @@
 import Medication from "../Components/Medication";
-import Navbar from "../Components/Navbar"
+import {NavbarComponent} from "../Components/NavbarComponent"
 import Upper from "../Components/Upper";
 
 const Dashboard:React.FC=()=>{
     return<>
-    <Navbar/>
+    <NavbarComponent/>
     <Upper/>
     <Medication/>
     </>

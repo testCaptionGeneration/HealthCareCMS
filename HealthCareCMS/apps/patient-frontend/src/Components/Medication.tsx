@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "./Button";
 
 interface Doctor {
   name: string;
@@ -56,9 +57,8 @@ const Medication: React.FC = () => {
               </div>
             </div>
             <p className="text-sm text-gray-500 mb-4">{doctor.availability}</p>
-            <button className="w-full bg-[#3a99b7] text-white text-sm font-medium py-2 rounded hover:bg-blue-600">
-              {doctor.buttonText}
-            </button>
+            
+            <Button title="chat with doctor" size="md" variant="secondary"/>
           </div>
         ))}
       </div>

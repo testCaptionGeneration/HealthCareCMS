@@ -1,1 +1,61 @@
 @import "tailwindcss";
+::-webkit-scrollbar {
+    width: 8px;  /* Adjust the width */
+    height: 8px; /* Adjust the height */
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: theme('colors.gray.200');
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: theme('colors.gray.500');
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.gray.600');
+  }
+
+
+/* Remove default date input styles */
+input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: theme('colors.white');
+  border: 1px solid theme('colors.gray.300');
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: theme('colors.gray.700');
+  cursor: pointer;
+}
+
+/* Change calendar icon */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(50%); /* Adjust color */
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+
+/* Remove default spinner arrows in number inputs */
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-clear-button {
+  display: none;
+}
+
+/* Placeholder style */
+input[type="date"]::placeholder {
+  color: theme('colors.gray.400');
+}
+
+/* Focus effect */
+input[type="date"]:focus {
+  outline: none;
+  border-color: theme('colors.blue.500');
+  box-shadow: 0 0 5px theme('colors.blue.300');
+}
+
+  
