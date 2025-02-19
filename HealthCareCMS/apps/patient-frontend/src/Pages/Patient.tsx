@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { z } from "zod";
 
@@ -18,11 +19,15 @@ const Patient: React.FC = () => {
   const [patients, setPatients] = useState<PatientType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
+ const navigate=useNavigate();
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await axios.get<PatientType[]>("http://localhost:5000/api/patients/pt");
+        const params = new URLSearchParams(window.location.search);
+        const phone = params.get("temp");
+        const response = await axios.get<PatientType[]>(
+          `http://localhost:3000/api/patients/profile/${phone}`
+        );
         setPatients(response.data);
       } catch (err) {
         setError("Failed to fetch patients.");
@@ -34,31 +39,55 @@ const Patient: React.FC = () => {
     fetchPatients();
   }, []);
 
+
+
+  const handleClick=(id:string)=>{
+    console.log("click hua")
+ navigate(`patient-dashboard/`)
+  }
+
   return (
-    <div className="mx-6 my-6 min-h-screen">
-      <div className="flex flex-col gap-4 w-full bg-white rounded-[31px] shadow-lg border border-white p-6">
-        <h2 className="text-xl font-bold mb-4">Patients List</h2>
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-6">
+      <div className="w-full max-w-5xl bg-white shadow-lg rounded-xl p-8">
+        <h2 className="text-3xl font-semibold text-gray-800 text-center mb-8">
+          Patients Directory
+        </h2>
 
-        {loading && <p>Loading...</p>}
-        {error && <p className="text-red-500">{error}</p>}
+        {loading && (
+          <div className="text-center text-gray-500 text-lg">Loading...</div>
+        )}
+        {error && (
+          <div className="text-center text-red-500 text-lg font-medium">
+            {error}
+          </div>
+        )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          className={`grid gap-6 ${
+            patients.length === 1
+              ? "grid-cols-1"
+              : patients.length <= 3
+              ? "grid-cols-2"
+              : "grid-cols-3"
+          }`}
+        >
           {patients.map((patient) => (
             <div
               key={patient._id}
-              className="flex-col justify-center bg-white rounded-[14px] shadow-md hover:shadow-lg transition-shadow duration-200 p-4 flex h-40 w-full max-w-[300px]"
+              className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300"
             >
-              <div className="flex items-center space-x-4 w-full">
-                <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center text-white text-lg font-bold">
+              <div className="flex flex-col items-center mb-4">
+                <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-3xl font-semibold shadow-md">
                   {patient.fullName.charAt(0)}
                 </div>
-                <div>
-                  <h1 className="text-lg font-semibold">{patient.fullName}</h1>
-                  <h3 className="text-sm text-gray-600">{patient.hospital}</h3>
-                </div>
+                <h3 className="mt-4 text-xl font-medium text-gray-800">
+                  {patient.fullName}
+                </h3>
+                <p className="text-md text-gray-500">{patient.hospital}</p>
               </div>
-              <button className="bg-[#3a99b7] text-white text-sm font-medium my-3 py-2 px-4 rounded mx-auto hover:bg-blue-600">
-                View Details
+
+              <button  onClick={() => handleClick(patient._id)} className="w-full bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition-all shadow-md hover:shadow-lg ">
+                View Profile
               </button>
             </div>
           ))}

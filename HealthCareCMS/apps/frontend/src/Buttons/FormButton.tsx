@@ -1,4 +1,3 @@
-
 import React from "react";
 
 interface FormButtonProps {
@@ -11,7 +10,7 @@ const FormButton: React.FC<FormButtonProps> = ({ onClick, text }) => {
     <button
       type="button"
       onClick={onClick}
-      className="w-full h-12 bg-[#3B9AB8] text-white rounded-lg flex justify-center items-center"
+      className="w-full pt-1 h-12 bg-[#3B9AB8] text-white rounded-lg flex justify-center items-center"
     >
       {text}
     </button>

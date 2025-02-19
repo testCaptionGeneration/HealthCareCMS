@@ -1,8 +1,6 @@
-const Priscription:React.FC =()=>{
-    return <>
-    <div>
+const Priscription:React.FC=()=>{
+return<>
 
-    </div>
-    </>
+</>
 }
 export default Priscription;

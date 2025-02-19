@@ -1,125 +1,205 @@
-// pages/SignUp.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { doctorSignupSchema, patientSignupSchema } from "../../../shared/validation";
+import { toast } from "react-toastify";
+import { ZodError } from "zod";
 import InputField from "../Components/InputField";
-import FormButton from "../Buttons/FormButton";
 import UserTypeSelector from "../Components/UserType";
+import FormButton from "../Buttons/FormButton";
+import { LogoIcon } from "../Icons/LogoIcon";
 
 const SignUp: React.FC = () => {
-  const [usertype, setUsertype] = useState<"doctor" | "patient">("doctor");
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [position, setPosition] = useState("");
-  const[dof,setdof]=useState("")
-  const[hospital,sethospital]=useState("") 
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    position: "",
+    dof: "",
+    hospital: "",
+    password: "",
+    usertype: "doctor" as "doctor" | "patient",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
 
-  const handleSignUp = () => {
-    localStorage.setItem("usertype", usertype);
-    navigate("/sign-in");
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const validateForm = async () => {
+    try {
+      const schema = formData.usertype === "doctor" ? doctorSignupSchema : patientSignupSchema;
+      await schema.parseAsync(formData);
+      setErrors({});
+      return true;
+    } catch (error: unknown) {
+      if (error instanceof ZodError) {
+        const formattedErrors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          if (err.path && err.path[0]) {
+            formattedErrors[err.path[0]] = err.message;
+          }
+        });
+        setErrors(formattedErrors);
+      }
+      return false;
+    }
+  };
+
+  const handleSignUp = async () => {
+    const isValid = await validateForm();
+    if (!isValid) return;
+
+    try {
+      const endpoint = formData.usertype === "doctor" ? "/api/doctors" : "/api/patients";
+      const response = await fetch(`http://localhost:3000${endpoint}/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        toast.success("Sign up successful!");
+       
+        const data=await response.json();
+        const temp=formData.usertype==="doctor"?data.doctor.id:data.phone;
+        console.log("temp phonen",temp);
+        console.log("pateint number :", temp);
+       window.location.href=`http://localhost:5174/patient/?${temp}`;
+      } else {
+        const error = await response.json();
+        toast.error(error.message || "Sign up failed");
+      }
+    } catch {
+      toast.error("An error occurred during sign up");
+    }
   };
 
   return (
-    <div className="flex flex-col md:flex-row bg-[#F9FAFB] min-h-screen">
-      <div className="relative w-full md:w-[45%] overflow-hidden bg-gradient-to-b from-[#3B9AB8] to-[#54B9ED] md:bg-none">
-        <img src="/assets/images/Frame 5.png" alt="Frame" className="h-[400px] md:h-[720px] w-full hidden md:block" />
-        <img src="/assets/images/upper.png" alt="upper" className="absolute bottom-0 left-0 h-[300px] md:h-[500px] w-full object-cover hidden md:block" />
+    <div className="flex bg-[#F9FAFB] min-h-screen">
+      <div className="relative w-[45%] h-[950px]">
+        <div className="absolute inset-0">
+          <img
+            src="/assets/images/Signup_bg.png"
+            alt="Frame"
+            className="min-h-full min-w-screen object-cover opacity-50 "
+          />
+        </div>
+        <div className="absolute bottom-0 left-0 w-full h-[635px]">
+          
+        </div>
       </div>
 
-      <div className="w-full md:w-[55%] flex flex-col justify-center items-center px-8 md:px-12 py-8 md:py-0">
-        <h1 className="text-3xl md:text-4xl font-semibold text-[#3B9AB8] mb-6 md:mb-8 text-center">Healthcare CMS</h1>
+      <div className="min-w-screen flex flex-col justify-center items-center px-12 absolute py-5">
+        <div className="flex items-center justify-center mb-2">
+          <LogoIcon size={28.85}/>
+        
+        <h1 className="lg:text-4xl sm:text-2xl font-semibold text-[#3B9AB8]  text-center">Healthcare CMS</h1>
+        
+        </div>
+        <div className="mb-4 text-center">
+          <p className="lg:text-xl sm:sm">
+            Already have an account?{" "}
+            <button
+              onClick={() => navigate("/sign-in")}
+              className="text-[#3B9AB8] font-normal hover:scale-110 hover:underline cursor-pointer"
+            >
+              Sign In here
+            </button>
+          </p>
+        </div>
 
-        <UserTypeSelector mode='signup'usertype={usertype} setUsertype={setUsertype} />
+        <UserTypeSelector 
+          usertype={formData.usertype} 
+          setUsertype={(type) => setFormData({ ...formData, usertype: type as "doctor" | "patient" })} 
+          mode="signup" 
+        />
 
         <div className="bg-white shadow-lg w-full max-w-md p-8 rounded-lg">
-          {usertype === "doctor" && (
-            <div>
-              <h2 className="text-2xl font-semibold text-[#3B9AB8] mb-6">Doctor Sign-Up Form</h2>
-              <form className="flex flex-col gap-4">
-                <InputField
-                  label="Full Name"
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Enter Your Full Name"
-                />
-                <InputField
-                  label="Email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter Your Email"
-                />
-                <InputField
-                  label="Phone Number"
-                  type="text"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Enter Your Phone Number"
-                />
+          <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
+            <InputField
+              label="Full Name"
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              placeholder="Enter your full name"
+              
+            />
+            {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
+
+            <InputField
+              label="Email"
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+             
+            />
+            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+
+            <InputField
+              label="Phone"
+              type="text"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Enter your phone"
+              
+            />
+            {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+
+            {formData.usertype === "doctor" && (
+              <>
                 <InputField
                   label="Position"
                   type="text"
-                  value={position}
-                  onChange={(e) => setPosition(e.target.value)}
-                  placeholder="Enter Your Position (e.g., General Practitioner)"
+                  name="position"
+                  value={formData.position}
+                  onChange={handleChange}
+                  placeholder="Enter your position"
+                 
                 />
-                <InputField
-                  label="Education"
-                  type="text"
-                  value={dof}
-                  onChange={(e) => setdof(e.target.value)}
-                  placeholder="Enter Your Education (e.g.,MBBS)"
-                />
-                <InputField
-                  label="Hospital"
-                  type="text"
-                  value={hospital}
-                  onChange={(e) => sethospital(e.target.value)}
-                  placeholder="Enter Your Education (e.g.,MBBS)"
-                />
-                <FormButton onClick={handleSignUp} text="Sign Up as Doctor" />
-              </form>
-            </div>
-          )}
+                {errors.position && <p className="text-red-500 text-sm mt-1">{errors.position}</p>}
 
-          {usertype === "patient" && (
-            <div>
-              <h2 className="text-2xl font-semibold text-[#3B9AB8] mb-6">Patient Sign-Up Form</h2>
-              <form className="flex flex-col gap-4">
                 <InputField
-                  label="Full Name"
+                  label="Degree/Field"
                   type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Enter Your Full Name"
+                  name="dof"
+                  value={formData.dof}
+                  onChange={handleChange}
+                  placeholder="Enter your degree or field"
+                  
                 />
-                <InputField
-                  label="Email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter Your Email"
-                />
-                <InputField
-                  label="Phone Number"
-                  type="text"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Enter Your Phone Number"
-                />
-                <InputField
-                  label="Hospital"
-                  type="text"
-                  value={hospital}
-                  onChange={(e) => sethospital(e.target.value)}
-                  placeholder="Enter Your Desired Hospital"
-                />
-                <FormButton onClick={handleSignUp} text="Sign Up as Patient" />
-              </form>
-            </div>
-          )}
+                {errors.dof && <p className="text-red-500 text-sm mt-1">{errors.dof}</p>}
+              </>
+            )}
+
+            <InputField
+              label="Password"
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+              
+            />
+            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+
+            <InputField
+              label="Hospital"
+              type="text"
+              name="hospital"
+              value={formData.hospital}
+              onChange={handleChange}
+              placeholder="Enter hospital name"
+             
+            />
+            {errors.hospital && <p className="text-red-500 text-sm mt-1">{errors.hospital}</p>}
+
+            <FormButton onClick={handleSignUp} text={`Sign Up as ${formData.usertype.charAt(0).toUpperCase() + formData.usertype.slice(1)}`} />
+          </form>
         </div>
       </div>
     </div>
