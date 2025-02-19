@@ -1,7 +1,16 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 
+export interface DoctorSignUp extends Document {
+  fullName: string;
+  email: string;
+  phone: string;
+  position: string;
+  password: string;
+  dof: string;
+  hospital: string;
+}
 
-const DoctorSchema = new mongoose.Schema({
+const DoctorSignUpSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   phone: { type: String, required: true },
@@ -11,5 +20,7 @@ const DoctorSchema = new mongoose.Schema({
   hospital: { type: String, required: true },
 });
 
-
-export const DoctorModel = mongoose.model("Doctor", DoctorSchema);
+export const DoctorSignUpModel = mongoose.model<DoctorSignUp>(
+  "DoctorSignUp",
+  DoctorSignUpSchema
+);

@@ -43,7 +43,7 @@ export const CreatePatient = ({ open, setOpen }: { open: boolean, setOpen: (valu
                 date: date
             })
 
-            console.log(response.data);
+            console.log(response);
             navigate(`/cms/v1/doctor/patient/prescription/${response.data.ObjectId}`)
 
 

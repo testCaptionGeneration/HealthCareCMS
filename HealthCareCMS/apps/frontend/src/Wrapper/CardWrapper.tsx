@@ -8,7 +8,6 @@ export const CardWrapper = ({ children, size }: { children: ReactNode, size?:num
         w-full 
         max-w-[670px] 
         h-auto 
-        bg-white
 
         md:h-[325px]
         lg:w-[670px] 
@@ -18,8 +17,8 @@ export const CardWrapper = ({ children, size }: { children: ReactNode, size?:num
         m-3 
         shadow-md 
         rounded-2xl 
-         
-        
+        border 
+        border-slate-300
       `}
     >
       {children}

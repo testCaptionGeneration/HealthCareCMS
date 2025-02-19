@@ -8,10 +8,10 @@ export const NavbarComponent = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="" >
+    <div >
 
-      <div className="hidden sm:flex justify-center mt-2 ">
-        <div className="w-full bg-white max-w-[1400px] h-[70px] flex justify-between items-center p-4 shadow-md rounded-lg">
+      <div className="hidden sm:flex justify-center mt-2">
+        <div className="w-full max-w-[1400px] h-[70px] flex justify-between items-center p-4 shadow-md rounded-lg border border-slate-300">
 
           <div className="flex items-center text-lg font-bold text-[#3B9AB8]">
             <LogoIcon size={28.84} />

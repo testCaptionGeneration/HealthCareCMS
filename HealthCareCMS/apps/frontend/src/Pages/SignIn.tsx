@@ -1,140 +1,105 @@
+// pages/SignIn.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signinSchema } from "../../../shared/validation";
-import { toast } from "react-toastify";
-import { ZodError } from "zod";
 import InputField from "../Components/InputField";
-import UserTypeSelector from "../Components/UserType";
 import FormButton from "../Buttons/FormButton";
-import { LogoIcon } from "../Icons/LogoIcon";
+import UserTypeSelector from "../Components/UserType";
 
 const SignIn: React.FC = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    usertype: "doctor" as "doctor" | "patient",
-  });
-
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [usertype, setUsertype] = useState<"doctor" | "patient">("doctor");
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const validateForm = async () => {
-    try {
-      await signinSchema.parseAsync({ email: formData.email, password: formData.password });
-      setErrors({});
-      return true;
-    } catch (err) {
-      if (err instanceof ZodError) {
-        const formattedErrors: Record<string, string> = {};
-        err.errors.forEach((error) => {
-          if (error.path && error.path[0]) {
-            formattedErrors[error.path[0]] = error.message;
-          }
-        });
-        setErrors(formattedErrors);
-      } else {
-        toast.error("An unknown error occurred.");
-      }
-      return false;
-    }
-  };
-
   const handleSignIn = async () => {
-    const isValid = await validateForm();
-    if (!isValid) return;
-
+    const credentials = { email, password };
+  
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/${formData.usertype === "doctor" ? "doctors" : "patients"}/signin`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: formData.email, password: formData.password }),
-        }
-      );
-
+      const response = await fetch(`http://localhost:5000/api/${usertype}s/signin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      });
+  
       const data = await response.json();
-
+  
       if (response.ok) {
-        localStorage.setItem("token", data.token);
-        toast.success("Sign in successful!");
-        const temp=formData.usertype==="doctor"?data.doctor.id:data.patient.phone;
-        console.log("temp phonen",temp);
-        console.log("pateint number :", temp);
-       window.location.href=`http://localhost:5174/patient/?temp=${temp}`;
+        localStorage.setItem("token", data.token); // ✅ Store token in localStorage
+  
+        if (usertype === "doctor") {
+          navigate("/doctor-dashboard");
+        } else if (usertype === "patient") {
+          navigate("/patient-dashboard");
+        }
       } else {
-        toast.error(data.message || "Sign in failed");
+        alert(data.message || "Login failed");
       }
-    } catch {
-      toast.error("An error occurred during sign in");
+    } catch (error) {
+      console.error("Error signing in:", error);
+      alert("An error occurred during sign-in.");
     }
   };
-
+  
   return (
-    <div className="flex bg-[#F9FAFB] min-h-screen fixed ">
-      <div className="relative w-[45%] h-[950px]">
-        <div className="absolute inset-0">
-          <img
-            src="/assets/images/Signup_bg.png"
-            alt="Frame"
-            className="min-h-full min-w-screen object-cover opacity-50"
-          />
-        </div>
+    <div className="flex flex-col md:flex-row bg-[#F9FAFB] min-h-screen">
+      <div className="relative w-full md:w-[45%] overflow-hidden bg-gradient-to-b from-[#3B9AB8] to-[#54B9ED] md:bg-none">
+        <img src="/assets/images/Frame 5.png" alt="Frame" className="h-[400px] md:h-[720px] w-full hidden md:block md:bg-blue-600" />
+        <img src="/assets/images/upper.png" alt="upper" className="absolute bottom-0 left-0 h-[300px] md:h-[500px] w-full object-cover hidden md:block" />
       </div>
 
-      <div className="min-w-screen flex flex-col justify-center items-center px-12 absolute py-10 ">
-        <div className="flex items-center justify-center mb-2">
-          <LogoIcon size={28.85} />
-          <h1 className="lg:text-4xl sm:text-2xl font-semibold text-[#3B9AB8] text-center">Healthcare CMS</h1>
-        </div>
+      <div className="w-full md:w-[55%] flex flex-col justify-center items-center px-8 md:px-12 py-8 md:py-0">
+        <h1 className="text-3xl md:text-4xl font-semibold text-[#3B9AB8] mb-6 md:mb-8 text-center">Healthcare CMS</h1>
 
-        <div className="mb-4 text-center">
-          <p className="lg:text-xl sm:text-sm">
-            Don’t have an account?{" "}
-            <button
-              onClick={() => navigate("/sign-up")}
-              className="text-[#3B9AB8] font-normal hover:scale-110 hover:underline cursor-pointer"
-            >
-              Sign Up here
-            </button>
-          </p>
-        </div>
+        <UserTypeSelector mode='signup'usertype={usertype} setUsertype={setUsertype} />
 
-        <UserTypeSelector
-          usertype={formData.usertype}
-          setUsertype={(type) => setFormData((prev) => ({ ...prev, usertype: type as "doctor" | "patient" }))}
-          mode="signin"
-        />
+        <div className="bg-white shadow-lg w-full max-w-md p-6 md:p-8 rounded-lg">
+          {usertype === "doctor" && (
+            <div>
+              <h2 className="text-2xl font-semibold text-[#3B9AB8] mb-6">Doctor Sign-In Form</h2>
+              <form className="flex flex-col gap-4">
+                <InputField
+                  label="Email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                />
+                <InputField
+                  label="Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                />
+                <FormButton onClick={handleSignIn} text="Sign In as Doctor" />
+              </form>
+            </div>
+          )}
 
-        <div className="bg-white shadow-lg w-full max-w-md p-8 rounded-lg">
-          <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
-            <InputField
-              label="Email"
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-            />
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-
-            <InputField
-              label="Password"
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-            />
-            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
-
-            <FormButton onClick={handleSignIn} text={`Sign In as ${formData.usertype.charAt(0).toUpperCase() + formData.usertype.slice(1)}`} />
-          </form>
+          {usertype === "patient" && (
+            <div>
+              <h2 className="text-2xl font-semibold text-[#3B9AB8] mb-6">Patient Sign-In Form</h2>
+              <form className="flex flex-col gap-4">
+                <InputField
+                  label="Email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                />
+                <InputField
+                  label="Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                />
+                <FormButton onClick={handleSignIn} text="Sign In as Patient" />
+              </form>
+            </div>
+          )}
         </div>
       </div>
     </div>
