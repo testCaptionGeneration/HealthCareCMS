@@ -6,6 +6,7 @@ import { ZodError } from "zod";
 import InputField from "../Components/InputField";
 import UserTypeSelector from "../Components/UserType";
 import FormButton from "../Buttons/FormButton";
+import { LogoIcon } from "../Icons/LogoIcon";
 
 const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +18,7 @@ const SignUp: React.FC = () => {
     hospital: "",
     password: "",
     usertype: "doctor" as "doctor" | "patient",
+    dob: ""
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
@@ -49,13 +51,17 @@ const SignUp: React.FC = () => {
     const isValid = await validateForm();
     if (!isValid) return;
 
+    console.log(formData);
+
     try {
       const endpoint = formData.usertype === "doctor" ? "/api/doctors/signup" : "/api/patients/signup";
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
+
+      const response = await fetch(`http://localhost:3000${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+      
 
       if (response.ok) {
         toast.success("Sign up successful!");
@@ -74,25 +80,25 @@ const SignUp: React.FC = () => {
       <div className="relative w-[45%] h-[950px]">
         <div className="absolute inset-0">
           <img
-            src="/assets/images/Frame 5.png"
+            src="/assets/images/Signup_bg.png"
             alt="Frame"
-            className="h-full w-full object-cover"
+            className="min-h-full min-w-screen object-cover opacity-50 "
           />
         </div>
         <div className="absolute bottom-0 left-0 w-full h-[635px]">
-          <img
-            src="/assets/images/upper.png"
-            alt="upper"
-            className="h-full w-full object-cover"
-          />
+          
         </div>
       </div>
 
-      <div className="w-[55%] flex flex-col justify-center items-center px-12">
-        <h1 className="text-4xl font-semibold text-[#3B9AB8] mb-6 text-center">Healthcare CMS</h1>
-
+      <div className="min-w-screen flex flex-col justify-center items-center px-12 absolute py-5">
+        <div className="flex items-center justify-center mb-2">
+          <LogoIcon size={28.85}/>
+        
+        <h1 className="lg:text-4xl sm:text-2xl font-semibold text-[#3B9AB8]  text-center">Healthcare CMS</h1>
+        
+        </div>
         <div className="mb-4 text-center">
-          <p className="text-2xl">
+          <p className="lg:text-md font-bold sm:sm">
             Already have an account?{" "}
             <button
               onClick={() => navigate("/sign-in")}
@@ -181,7 +187,7 @@ const SignUp: React.FC = () => {
             />
             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
 
-            <InputField
+            {formData.usertype === "doctor" && <InputField
               label="Hospital"
               type="text"
               name="hospital"
@@ -189,7 +195,18 @@ const SignUp: React.FC = () => {
               onChange={handleChange}
               placeholder="Enter hospital name"
              
-            />
+            />}
+
+
+            {formData.usertype === "patient" && <InputField
+              label="Date of Birth"
+              type="date"
+              name="dob"
+              value={formData.dob}
+              onChange={handleChange}
+              placeholder="Enter hospital name"
+             
+            />}
             {errors.hospital && <p className="text-red-500 text-sm mt-1">{errors.hospital}</p>}
 
             <FormButton onClick={handleSignUp} text={`Sign Up as ${formData.usertype.charAt(0).toUpperCase() + formData.usertype.slice(1)}`} />

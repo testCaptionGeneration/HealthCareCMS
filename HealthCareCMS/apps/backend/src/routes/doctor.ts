@@ -1,7 +1,7 @@
 import express from "express";
 import { doctorSignup, doctorSignin } from "../controller/doctorController";
 import { validateRequest } from "../Middleware/ValidateRequest";
-import { doctorSignupSchema, signinSchema } from "../../../shared/validation"; 
+import { doctorSignupSchema, signinSchema } from "../../../shared/validation"
 
 const doctorrouter = express.Router();
 

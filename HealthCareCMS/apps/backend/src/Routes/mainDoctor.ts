@@ -1,0 +1,274 @@
+import express, { Router } from "express";
+import { DiseaseModel, MedicationModel, PatientModel, PrescirptionModel } from "../db";
+import { stringify } from "querystring";
+const doctorRouter = Router();
+import mongoose from "mongoose";
+import { prescriptionRouter } from "./prescirption";
+import { DoctorModel } from "../models/DoctorSchema";
+const app=express();
+
+// app.use('/prescription',prescriptionRouter);
+
+doctorRouter.post('/patient', async (req, res) => {
+    const name = req.body.name;
+    const age = req.body.age;
+    const gender = req.body.gender;
+    const DateOfBirth = req.body.birth;
+    const number = req.body.number
+
+    try {
+        const newPatient = await PatientModel.create({
+            name,
+            age,
+            gender,
+            birth: DateOfBirth,
+            number
+        })
+
+        res.json({
+            message: "added",
+            ObjectId: newPatient._id
+        })
+    }
+    catch (error) {
+        res.json({
+            message: `an error occured ${error}`
+        })
+    }
+
+})
+
+doctorRouter.get('/patientDetails/:id', async (req, res) => {
+    try {
+        const prescirptionId = req.params.id;
+        const newPatient = await PatientModel.findOne({
+            _id: prescirptionId
+        })
+
+        if (!newPatient) {
+            res.status(404).json({ message: "Not found" })
+        }
+
+        res.json({
+            newPatient
+        })
+    } catch (error) {
+        res.json({
+            message: error
+        })
+    }
+
+})
+
+doctorRouter.post('/medication', async (req, res) => {
+    const prescriptionId = req.body.prescriptionId;
+    const doctorId=req.body.doctorId;
+    const patientId=req.body.patientId;
+    const medication = req.body.medication;
+    const dose = req.body.dose;
+    const doseUnit = req.body.doseUnit;
+    const duration = req.body.duration;
+    const durationUnit = req.body.durationUnit;
+    const morning = req.body.morning;
+    const afternoon = req.body.afternoon;
+    const evening = req.body.evening;
+    const mealStatus = req.body.mealStatus;
+
+    try {
+        const newMedication = await MedicationModel.create({
+            prescriptionId,
+            doctorId,
+            patientId,
+            medication,
+            dose,
+            doseUnit,
+            duration,
+            durationUnit,
+            morning,
+            afternoon,
+            evening,
+            mealStatus
+        })
+
+        res.json({
+            message: "Medication Added"
+        })
+    }
+    catch (error) {
+        res.status(520).json({
+            message: `An unknown error occured ${error}`
+        })
+    }
+})
+
+doctorRouter.get('/medications/:prescriptionId', async (req, res) => {
+    try {
+        const prescriptionId = req.params.prescriptionId;
+        const medication = await MedicationModel.find({ prescriptionId });
+        res.json({
+            medication: medication
+        })
+    }
+    catch (e) {
+        console.log(e);
+        res.status(500).json({
+            message: "error fetching medication"
+        })
+    }
+})
+
+
+doctorRouter.delete('/medication/:medicineId', async (req, res) => {
+    try {
+        const { medicineId } = req.params;
+
+
+
+        const result = await MedicationModel.deleteOne({ _id: medicineId });
+
+        if (result.deletedCount === 0) {
+            res.status(404).json({ Message: "Medicine not found" });
+        }
+
+        res.json({ Message: "Medicine Deleted Successfully" });
+    } catch (error) {
+        res.status(500).json({ Message: `An error occurred while deleting medicine: ${error}` });
+    }
+});
+
+doctorRouter.post('/disease',async (req,res)=>{
+    try{
+    const {disease,severity,patientId,doctorId}=req.body;
+    
+    await DiseaseModel.create({
+        doctorId,
+        patientId,
+        disease,
+        severity
+    });
+
+    res.status(200).json({
+        message:"Disease Added"
+    })
+}
+catch(error){
+    res.status(502).json({
+        message:`An error occured : ${error}`
+    })
+}
+})
+
+doctorRouter.get('/search/:phone/:dob', (req, res) => {
+  try {
+    const phoneNumber = req.params.phone;
+    const DateOfBirth = req.params.dob;
+
+    const regex = new RegExp('^' + DateOfBirth);
+    PatientModel.findOne({
+      phone: phoneNumber,
+      dob: regex
+    }).then((result) => {
+      res.json({
+        result
+      })
+    })
+  } catch (error) {
+    res.json({
+      error
+    })
+  }
+})
+
+
+doctorRouter.post('/prescription/presId', async (req, res) => {
+    
+    try{
+    const doctorName=req.body.doctorName;
+    const patientId=req.body.patientId; 
+
+    const response=await PrescirptionModel.create({
+        doctorName,
+        patientId
+    })
+
+    res.json({
+        response
+    })
+    }
+    catch(e){
+        res.status(500).json({
+            message:e
+        })
+    }
+})
+
+
+
+doctorRouter.get('/prescription/:presId', async (req, res) => {
+    const prescirptionId=req.params.presId;
+    try{
+    const response=await PrescirptionModel.findOne({
+        _id: prescirptionId
+    })
+    res.json({
+        response
+    })
+    }
+    catch(e){
+        res.status(500).json({
+            message:e
+        })
+    }
+})
+
+doctorRouter.get('/prescription/patient/:patientId', async (req, res) => {
+    const patientId=req.params.patientId;       
+
+    try{
+        const response=await PrescirptionModel.find({
+            patientId:patientId
+        })
+
+        res.json({
+            response
+        })
+    }
+    catch(error){
+        res.status(500).json({
+            message:error
+        })
+    }
+})
+
+doctorRouter.get('/prescription/doctor/:doctorId', async (req, res) => {
+
+    const doctorId=req.params.doctorId;
+
+    try{
+        const response=await DoctorModel.findOne({
+            _id:doctorId
+        })        
+
+        if(response) {
+            const name=response.fullName;
+            res.json({
+                name
+            })
+        } else {
+            res.status(404).json({
+                message: "Doctor not found"
+            })
+        }
+    }
+    catch(error){
+        res.status(500).json({
+            message:error
+        })
+    }
+}
+
+)
+
+
+
+export { doctorRouter };

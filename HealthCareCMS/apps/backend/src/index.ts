@@ -1,14 +1,35 @@
-import express from "express";
-import cors from "cors";
-import connectDB from "./db/dbconnection";
-import doctorrouter from "./routes/doctor";  
-import patientrouter from "./routes/patient";  
-import dotenv from "dotenv";
-
-dotenv.config(); 
-
+import express, { Request } from "express"
+import dotenv from 'dotenv'
+dotenv.config();
 const app = express();
+const port: number = 3000;
+import mongoose from "mongoose";
+import cors from 'cors'
+const Router = express.Router();
 
+import doctorrouter from "./Routes/doctor";
+import patientrouter from "./Routes/patient";
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      MONGO_URL: string;
+    }
+  }
+  namespace Express {
+    interface Request {
+      userId: String
+    }
+  }
+}
+
+export { };
+
+
+import { PatientModel } from "./db";
+import { doctorRouter } from "./Routes/mainDoctor";
+import { prescriptionRouter } from "./Routes/prescirption";
+app.use(express.json())
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -16,15 +37,31 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+app.use("/api/doctors", doctorrouter);
+app.use("/api/patients", patientrouter);
 
-app.use(express.json());
+const db_url = process.env.MONGO_URL;
+app.use('/cms/v1/doctor', doctorRouter);
 
-connectDB();
+async function main() {
+  await mongoose.connect(db_url).then(() => console.log("Connection eshatablished with database")).catch((e) => console.log(e));
 
-app.use("/api/doctors", doctorrouter);  
-app.use("/api/patients", patientrouter);  
+  app.listen(process.env.PORT, () => console.log(`App listening to ${process.env.PORT}`));
+}
+main();
 
-const PORT = process.env.PORT || 5000; 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
