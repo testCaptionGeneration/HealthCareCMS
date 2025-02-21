@@ -7,6 +7,7 @@ import SignIn from "./pages/SignIn";
 import DoctorDashboard from "./Dashboard/DoctorDashboard";
 import PatientDashboard from "./Dashboard/PatientDashboard";
 import ProtectedRoute from "./Protected/ProtectedRoute";
+import { PatientPage } from './pages/Patient';
 
 function App() {
 
@@ -17,8 +18,9 @@ function App() {
     <Route path="/sign-in" element={<SignIn />} />
 
 
-    <Route path="/cms/v1/doctor/dashboard" element={<Dashboard />} />
-    <Route path="/cms/v1/doctor/patient/prescription/:userId" element={<PrescriptionComponent />} />
+    <Route path="/cms/v1/doctor/dashboard/:DoctorId" element={<Dashboard />} />
+    <Route path="/cms/v1/doctor/patient/prescription/:prescriptionId" element={<PrescriptionComponent />} />
+    <Route path="/cms/v1/doctor/search/patientDetails/:doctorId/:patientId" element={<PatientPage />} />
 
     <Route element={<ProtectedRoute />}>
       <Route path="/doctor-dashboard" element={<DoctorDashboard />} />

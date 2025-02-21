@@ -1,10 +1,10 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Input } from '../Components/Inputs/Input'
 import { CloseIcon } from '../Icons/CloseIcon'
 import { Button } from '../Components/Inputs/Button'
 import { BACKEND_URL } from '../config'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import "react-datepicker/dist/react-datepicker.css";
 
 
@@ -17,7 +17,12 @@ export const CreatePatient = ({ open, setOpen }: { open: boolean, setOpen: (valu
     const patientSeverityRef = useRef<HTMLSelectElement | null>(null);
     const patientPhoneNumberRef = useRef<HTMLInputElement | null>(null);
     const patientBirthDateRef = useRef<HTMLInputElement | null>(null);
+    const prescriptionId=useParams().prescriptionId;
     const navigate = useNavigate();
+
+    useEffect(()=>{
+        
+    },[prescriptionId])
 
 
     const createPatientOnClick = async () => {
@@ -48,7 +53,6 @@ export const CreatePatient = ({ open, setOpen }: { open: boolean, setOpen: (valu
 
 
             setOpen(false);
-            // alert("Patient details added")
         }
         catch (error) {
             console.log(error)

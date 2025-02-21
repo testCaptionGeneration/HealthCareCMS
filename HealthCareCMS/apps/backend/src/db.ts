@@ -5,8 +5,6 @@ const PatientSchema = new Schema({
     age: Number,
     birth: String,
     gender: String,
-    disease: String,
-    severity: String,
     number: String,
     date: { type: Date, default: Date.now() },
     // userId:{type:mongoose.Types.ObjectId, required:true}
@@ -15,7 +13,7 @@ const PatientSchema = new Schema({
 
 
 const MedicationScehma = new Schema({
-    prescriptionId: { type: mongoose.Types.ObjectId, required: true },
+    prescriptionId: { type: mongoose.Types.ObjectId,required:true },
     medication: String,
     dose: Number,
     doseUnit: String,
@@ -27,5 +25,20 @@ const MedicationScehma = new Schema({
     mealStatus: String
 })
 
+const DiseaseSchema=new Schema({
+    doctorId:{type:mongoose.Types.ObjectId, required:true},
+    patientId:{type:mongoose.Types.ObjectId, required:true},
+    disease:String,
+    severity:String
+})
+
+const Prescirption=new Schema({
+    doctorName:{type:String, required:true}, 
+    patientId:{type:mongoose.Types.ObjectId, required:true},
+    date:{type:Date, default:Date.now()},
+})
+
 export const PatientModel = model("patient", PatientSchema);
 export const MedicationModel = model("Medication", MedicationScehma);
+export const DiseaseModel=model("Disease",DiseaseSchema);
+export const PrescirptionModel=model("Prescirption",Prescirption);

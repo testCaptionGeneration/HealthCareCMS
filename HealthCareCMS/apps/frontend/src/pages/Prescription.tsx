@@ -11,36 +11,48 @@ import { CloseIcon } from "../Icons/CloseIcon";
 import { Loader } from "../Components/LoaderSckelton";
 
 interface Patient {
-    name: string;
-    age: number;
-    gender: string;
-    disease: string;
-    severity: string;
-    number: string;
-    birth: string;
-    date: Date;
+    fullName: string;
+    phone: string;
+    dob: string;
 }
 
 interface PatientDetailsResponse {
     newPatient: Patient;
 }
 
+const formatDate = (dob: string) => {
+    if (!dob) return "";
+    const age= new Date().getFullYear() - new Date(dob).getFullYear();
+    return `${age} Years Old`;
+  };
+
 export const PrescriptionComponent = () => {
     const [prescriptionMedication, setPrescriptionMedication] = useState(false);
     const [patientDetails, setPatientDetails] = useState<PatientDetailsResponse | null>(null);
     const [loader, setLoader] = useState(true);
-    const { userId } = useParams<{ userId: string }>();
+    const { prescriptionId } = useParams<{ prescriptionId: string }>();
     const [refresh, setRefresh] = useState(true);
 
     useEffect(() => {
+        console.log(prescriptionId);
         const fetchDetails = async () => {
             setLoader(true);
             try {
-                if (!userId) return;
-                const response = await axios.get<PatientDetailsResponse>(
-                    `${BACKEND_URL}cms/v1/doctor/patientdetails/${userId}`
-                );
-                setPatientDetails(response.data);
+                if (!prescriptionId) return;
+                try {
+
+                    const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/prescription/${prescriptionId}`);
+
+
+                    console.log(response.data.response.patientId);
+
+                    const res = await axios.get<PatientDetailsResponse>(
+                        `${BACKEND_URL}cms/v1/doctor/patientdetails/${response.data.response.patientId}`
+                    );
+                    setPatientDetails(res.data);
+                } catch (error) {
+                    console.log(error);
+                }
             } catch (error) {
                 console.error("An error occurred:", error);
             }
@@ -52,10 +64,10 @@ export const PrescriptionComponent = () => {
         const handleMedicineUpdate = () => {
             setRefresh((prev) => !prev);
         };
-
+ 
         window.addEventListener("medicineUpdated", handleMedicineUpdate);
         return () => window.removeEventListener("medicineUpdated", handleMedicineUpdate);
-    }, [userId, refresh]);
+    }, [prescriptionId, refresh]);
 
 
 
@@ -71,7 +83,7 @@ export const PrescriptionComponent = () => {
     };
 
     const { medication, isLoading } = useMedicines({
-        userId: userId || "",
+        prescriptionId: prescriptionId || "",
         refresh
     });
 
@@ -82,7 +94,6 @@ export const PrescriptionComponent = () => {
                     <CreatePrescription
                         open={prescriptionMedication}
                         setOpen={setPrescriptionMedication}
-                        prescriptionId={userId || ""}
 
 
                     />
@@ -94,14 +105,14 @@ export const PrescriptionComponent = () => {
                                 <span>
                                     <i>
                                         <strong className="text-lg uppercase">
-                                            {patientDetails?.newPatient.name},
+                                            {patientDetails?.newPatient.fullName},
+                                            <span className="text-gray-500 text-sm">
+                                                ({formatDate(patientDetails?.newPatient.dob ?? "")})</span>
                                         </strong>{" "}
-                                        {patientDetails?.newPatient.gender}, {patientDetails?.newPatient.age} Years, +{patientDetails?.newPatient.number}
+
                                     </i>
                                 </span>
-                                <div>
-                                    <strong>Chief Complaints:</strong> {patientDetails?.newPatient.disease} (Severity: {patientDetails?.newPatient.severity})
-                                </div>
+
                             </div>
 
                         }

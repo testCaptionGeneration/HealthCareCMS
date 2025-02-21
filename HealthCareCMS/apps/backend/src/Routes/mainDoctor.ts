@@ -1,15 +1,19 @@
 import express, { Router } from "express";
-import { MedicationModel, PatientModel } from "../db";
+import { DiseaseModel, MedicationModel, PatientModel, PrescirptionModel } from "../db";
 import { stringify } from "querystring";
 const doctorRouter = Router();
 import mongoose from "mongoose";
+import { prescriptionRouter } from "./prescirption";
+import { DoctorModel } from "../models/DoctorSchema";
+const app=express();
+
+// app.use('/prescription',prescriptionRouter);
+
 doctorRouter.post('/patient', async (req, res) => {
     const name = req.body.name;
     const age = req.body.age;
     const gender = req.body.gender;
     const DateOfBirth = req.body.birth;
-    const disease = req.body.disease;
-    const severity = req.body.severity;
     const number = req.body.number
 
     try {
@@ -18,8 +22,6 @@ doctorRouter.post('/patient', async (req, res) => {
             age,
             gender,
             birth: DateOfBirth,
-            disease,
-            severity,
             number
         })
 
@@ -38,9 +40,9 @@ doctorRouter.post('/patient', async (req, res) => {
 
 doctorRouter.get('/patientDetails/:id', async (req, res) => {
     try {
-        const userId = req.params.id;
+        const prescirptionId = req.params.id;
         const newPatient = await PatientModel.findOne({
-            _id: userId
+            _id: prescirptionId
         })
 
         if (!newPatient) {
@@ -59,8 +61,9 @@ doctorRouter.get('/patientDetails/:id', async (req, res) => {
 })
 
 doctorRouter.post('/medication', async (req, res) => {
-
     const prescriptionId = req.body.prescriptionId;
+    const doctorId=req.body.doctorId;
+    const patientId=req.body.patientId;
     const medication = req.body.medication;
     const dose = req.body.dose;
     const doseUnit = req.body.doseUnit;
@@ -74,6 +77,8 @@ doctorRouter.post('/medication', async (req, res) => {
     try {
         const newMedication = await MedicationModel.create({
             prescriptionId,
+            doctorId,
+            patientId,
             medication,
             dose,
             doseUnit,
@@ -130,5 +135,140 @@ doctorRouter.delete('/medication/:medicineId', async (req, res) => {
         res.status(500).json({ Message: `An error occurred while deleting medicine: ${error}` });
     }
 });
+
+doctorRouter.post('/disease',async (req,res)=>{
+    try{
+    const {disease,severity,patientId,doctorId}=req.body;
+    
+    await DiseaseModel.create({
+        doctorId,
+        patientId,
+        disease,
+        severity
+    });
+
+    res.status(200).json({
+        message:"Disease Added"
+    })
+}
+catch(error){
+    res.status(502).json({
+        message:`An error occured : ${error}`
+    })
+}
+})
+
+doctorRouter.get('/search/:phone/:dob', (req, res) => {
+  try {
+    const phoneNumber = req.params.phone;
+    const DateOfBirth = req.params.dob;
+
+    const regex = new RegExp('^' + DateOfBirth);
+    PatientModel.findOne({
+      phone: phoneNumber,
+      dob: regex
+    }).then((result) => {
+      res.json({
+        result
+      })
+    })
+  } catch (error) {
+    res.json({
+      error
+    })
+  }
+})
+
+
+doctorRouter.post('/prescription/presId', async (req, res) => {
+    
+    try{
+    const doctorName=req.body.doctorName;
+    const patientId=req.body.patientId; 
+
+    const response=await PrescirptionModel.create({
+        doctorName,
+        patientId
+    })
+
+    res.json({
+        response
+    })
+    }
+    catch(e){
+        res.status(500).json({
+            message:e
+        })
+    }
+})
+
+
+
+doctorRouter.get('/prescription/:presId', async (req, res) => {
+    const prescirptionId=req.params.presId;
+    try{
+    const response=await PrescirptionModel.findOne({
+        _id: prescirptionId
+    })
+    res.json({
+        response
+    })
+    }
+    catch(e){
+        res.status(500).json({
+            message:e
+        })
+    }
+})
+
+doctorRouter.get('/prescription/patient/:patientId', async (req, res) => {
+    const patientId=req.params.patientId;       
+
+    try{
+        const response=await PrescirptionModel.find({
+            patientId:patientId
+        })
+
+        res.json({
+            response
+        })
+    }
+    catch(error){
+        res.status(500).json({
+            message:error
+        })
+    }
+})
+
+doctorRouter.get('/prescription/doctor/:doctorId', async (req, res) => {
+
+    const doctorId=req.params.doctorId;
+
+    try{
+        const response=await DoctorModel.findOne({
+            _id:doctorId
+        })        
+
+        if(response) {
+            const name=response.fullName;
+            res.json({
+                name
+            })
+        } else {
+            res.status(404).json({
+                message: "Doctor not found"
+            })
+        }
+    }
+    catch(error){
+        res.status(500).json({
+            message:error
+        })
+    }
+}
+
+)
+
+
 
 export { doctorRouter };

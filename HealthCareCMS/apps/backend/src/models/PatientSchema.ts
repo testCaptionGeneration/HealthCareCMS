@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { string } from "zod";
 
 
 const PatientSchema = new mongoose.Schema({
@@ -6,7 +7,7 @@ const PatientSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   phone: { type: String, required: true },
   password: { type: String, required: true },
-  hospital: { type: String, required: true },
+  dob:{type: String  , required:true}
 });
 
 

@@ -5,14 +5,16 @@ import { useState } from "react"
 import { CloseIcon } from "../Icons/CloseIcon"
 import axios from "axios"
 import { BACKEND_URL } from "../config"
+import { useParams } from "react-router-dom"
 
 enum MedTime {
     AfterMeal = "aftermeal",
     BeforeMeal = "beforemeal"
 }
 
-export const CreatePrescription = ({ open, setOpen, prescriptionId,  }: { open: boolean, setOpen: (value: boolean) => void, prescriptionId: string }) => {
+export const CreatePrescription = ({ open, setOpen  }: { open: boolean, setOpen: (value: boolean) => void }) => {
     const [time, setTime] = useState(MedTime.AfterMeal);
+    const prescriptionId = useParams().prescriptionId;
 
     const [medicine, setMedication] = useState("");
     const [Dose, setDose] = useState<String | null>(null);
@@ -28,10 +30,10 @@ export const CreatePrescription = ({ open, setOpen, prescriptionId,  }: { open: 
             console.error("Error: Prescription ID is missing!");
             return;
         }
-
+ 
         try {
             await axios.post(`${BACKEND_URL}cms/v1/doctor/medication`, {
-                prescriptionId,
+                prescriptionId:prescriptionId,
                 medication: medicine,
                 dose: Dose,
                 doseUnit: DoseUnit,

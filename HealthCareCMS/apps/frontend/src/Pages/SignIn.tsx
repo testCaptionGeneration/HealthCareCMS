@@ -50,7 +50,7 @@ const SignIn: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/${formData.usertype === "doctor" ? "doctors" : "patients"}/signin`,
+        `http://localhost:3000/api/${formData.usertype === "doctor" ? "doctors" : "patients"}/signin`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -59,11 +59,12 @@ const SignIn: React.FC = () => {
       );
 
       const data = await response.json();
+      console.log(data.doctor.id);
 
-      if (response.ok) {
+      if (response) {
         localStorage.setItem("token", data.token);
         toast.success("Sign in successful!");
-        navigate(formData.usertype === "doctor" ? "/doctor-dashboard" : "/patient-dashboard");
+        navigate(formData.usertype === "doctor" ? `/cms/v1/doctor/dashboard/${data.doctor.id}` : "/patient-dashboard");
       } else {
         toast.error(data.message || "Sign in failed");
       }
@@ -76,11 +77,13 @@ const SignIn: React.FC = () => {
     <div className="flex bg-[#F9FAFB] min-h-screen fixed ">
       <div className="relative w-[45%] h-[950px]">
         <div className="absolute inset-0">
+        <div className="object-cover opacity-70  ">
           <img
             src="/assets/images/Signup_bg.png"
             alt="Frame"
-            className="min-h-full min-w-screen object-cover opacity-50"
+            className="min-h-full min-w-screen  "
           />
+          </div>
         </div>
       </div>
 
@@ -94,7 +97,7 @@ const SignIn: React.FC = () => {
           <p className="lg:text-xl sm:text-sm">
             Don’t have an account?{" "}
             <button
-              onClick={() => navigate("/sign-up")}
+              onClick={() => navigate("/")}
               className="text-[#3B9AB8] font-normal hover:scale-110 hover:underline cursor-pointer"
             >
               Sign Up here

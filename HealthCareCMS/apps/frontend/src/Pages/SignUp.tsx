@@ -18,6 +18,7 @@ const SignUp: React.FC = () => {
     hospital: "",
     password: "",
     usertype: "doctor" as "doctor" | "patient",
+    dob: ""
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
@@ -50,13 +51,17 @@ const SignUp: React.FC = () => {
     const isValid = await validateForm();
     if (!isValid) return;
 
+    console.log(formData);
+
     try {
       const endpoint = formData.usertype === "doctor" ? "/api/doctors/signup" : "/api/patients/signup";
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
+
+      const response = await fetch(`http://localhost:3000${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+      
 
       if (response.ok) {
         toast.success("Sign up successful!");
@@ -93,7 +98,7 @@ const SignUp: React.FC = () => {
         
         </div>
         <div className="mb-4 text-center">
-          <p className="lg:text-xl sm:sm">
+          <p className="lg:text-md font-bold sm:sm">
             Already have an account?{" "}
             <button
               onClick={() => navigate("/sign-in")}
@@ -182,7 +187,7 @@ const SignUp: React.FC = () => {
             />
             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
 
-            <InputField
+            {formData.usertype === "doctor" && <InputField
               label="Hospital"
               type="text"
               name="hospital"
@@ -190,7 +195,18 @@ const SignUp: React.FC = () => {
               onChange={handleChange}
               placeholder="Enter hospital name"
              
-            />
+            />}
+
+
+            {formData.usertype === "patient" && <InputField
+              label="Date of Birth"
+              type="date"
+              name="dob"
+              value={formData.dob}
+              onChange={handleChange}
+              placeholder="Enter hospital name"
+             
+            />}
             {errors.hospital && <p className="text-red-500 text-sm mt-1">{errors.hospital}</p>}
 
             <FormButton onClick={handleSignUp} text={`Sign Up as ${formData.usertype.charAt(0).toUpperCase() + formData.usertype.slice(1)}`} />

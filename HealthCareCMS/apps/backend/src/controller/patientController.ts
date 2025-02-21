@@ -2,15 +2,14 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { PatientModel } from "../models/PatientSchema"; // ✅ Use the correct Mongoose model
-import { patientSignupSchema } from "../../../shared/validation"; // ✅ Import Zod validation schema
-import { signinSchema } from "../zod/validation";
+import { signinSchema, patientSignupSchema } from "../zod/validation";
 const JWT_SECRET = process.env.JWT_SECRET || "default-secret";
 
 export const patientSignup = async (req: Request, res: Response): Promise<void> => {
   try {
     
     const parsedBody = patientSignupSchema.parse(req.body);
-    const { fullName, phone, email, password, hospital } = parsedBody;
+    const { fullName, phone, email, password,dob} = parsedBody;
 
     
     const existingPatient = await PatientModel.findOne({ email });
@@ -26,7 +25,7 @@ export const patientSignup = async (req: Request, res: Response): Promise<void> 
       phone,
       email,
       password: hashedPassword,
-      hospital,
+      dob
     });
 
     const savedPatient = await newPatient.save();
@@ -39,7 +38,6 @@ export const patientSignup = async (req: Request, res: Response): Promise<void> 
         id: savedPatient._id,
         fullName: savedPatient.fullName,
         email: savedPatient.email,
-        hospital: savedPatient.hospital,
       },
       token,
     });
@@ -75,7 +73,6 @@ export const patientSignin = async (req: Request, res: Response): Promise<void> 
         id: patient._id,
         fullName: patient.fullName,
         email: patient.email,
-        hospital: patient.hospital,
       },
       token,
     });

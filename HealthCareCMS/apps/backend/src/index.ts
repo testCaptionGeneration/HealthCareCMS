@@ -7,7 +7,6 @@ import mongoose from "mongoose";
 import cors from 'cors'
 const Router = express.Router();
 
-import connectDB from "./db/dbconnection";
 import doctorrouter from "./Routes/doctor";
 import patientrouter from "./Routes/patient";
 
@@ -29,6 +28,7 @@ export { };
 
 import { PatientModel } from "./db";
 import { doctorRouter } from "./Routes/mainDoctor";
+import { prescriptionRouter } from "./Routes/prescirption";
 app.use(express.json())
 app.use(
   cors({
