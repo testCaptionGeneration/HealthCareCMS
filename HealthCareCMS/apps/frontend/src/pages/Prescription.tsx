@@ -1,14 +1,17 @@
+import { useEffect, useState } from "react";
+import {useParams } from "react-router-dom";
 import axios from "axios";
+
 import { Button } from "../Components/Inputs/Button";
 import { PageWrapper } from "../Wrapper/PageWrapper";
-import { BACKEND_URL } from "../config";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { CreatePrescription } from "../Creation/CreatePrescription";
-import { AddIcon } from "../Icons/AddIcon";
-import { useMedicines } from "../hooks/useMedicines";
-import { CloseIcon } from "../Icons/CloseIcon";
 import { Loader } from "../Components/LoaderSckelton";
+
+import { BACKEND_URL } from "../config";
+import { useMedicines } from "../hooks/useMedicines";
+
+import { AddIcon } from "../Icons/AddIcon";
+import { CloseIcon } from "../Icons/CloseIcon";
 
 interface Patient {
     fullName: string;
@@ -22,100 +25,80 @@ interface PatientDetailsResponse {
 
 const formatDate = (dob: string) => {
     if (!dob) return "";
-    const age= new Date().getFullYear() - new Date(dob).getFullYear();
+    const age = new Date().getFullYear() - new Date(dob).getFullYear();
     return `${age} Years Old`;
-  };
+};
 
 export const PrescriptionComponent = () => {
+    const { prescriptionId } = useParams<{ prescriptionId: string }>();
     const [prescriptionMedication, setPrescriptionMedication] = useState(false);
     const [patientDetails, setPatientDetails] = useState<PatientDetailsResponse | null>(null);
     const [loader, setLoader] = useState(true);
-    const { prescriptionId } = useParams<{ prescriptionId: string }>();
     const [refresh, setRefresh] = useState(true);
+    const [content,setContent]=useState<string>('');
 
     useEffect(() => {
-        console.log(prescriptionId);
         const fetchDetails = async () => {
+            if (!prescriptionId) return;
+
             setLoader(true);
             try {
-                if (!prescriptionId) return;
-                try {
-
-                    const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/prescription/${prescriptionId}`);
-
-
-                    console.log(response.data.response.patientId);
-
-                    const res = await axios.get<PatientDetailsResponse>(
-                        `${BACKEND_URL}cms/v1/doctor/patientdetails/${response.data.response.patientId}`
-                    );
-                    setPatientDetails(res.data);
-                } catch (error) {
-                    console.log(error);
-                }
+                const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/prescription/${prescriptionId}`);
+                const patientId = response.data.response.patientId;
+                const res = await axios.get<PatientDetailsResponse>(`${BACKEND_URL}cms/v1/doctor/patientdetails/${patientId}`);
+                setPatientDetails(res.data);
             } catch (error) {
-                console.error("An error occurred:", error);
+                console.error("Error fetching patient details:", error);
+            } finally {
+                setLoader(false);
             }
-            setLoader(false);
         };
 
         fetchDetails();
 
-        const handleMedicineUpdate = () => {
-            setRefresh((prev) => !prev);
-        };
- 
+        const handleMedicineUpdate = () => setRefresh((prev) => !prev);
         window.addEventListener("medicineUpdated", handleMedicineUpdate);
         return () => window.removeEventListener("medicineUpdated", handleMedicineUpdate);
     }, [prescriptionId, refresh]);
-
-
-
-
 
     const deleteMedicine = async (medicineId: string) => {
         try {
             await axios.delete(`${BACKEND_URL}cms/v1/doctor/medication/${medicineId}`);
             setRefresh((prev) => !prev);
         } catch (error) {
-            console.log("Error deleting medicine:", error);
+            console.error("Error deleting medicine:", error);
         }
     };
 
-    const { medication, isLoading } = useMedicines({
-        prescriptionId: prescriptionId || "",
-        refresh
-    });
+    const { medication, isLoading } = useMedicines({ prescriptionId: prescriptionId || "", refresh });
 
     return (
         <PageWrapper>
-            <div className="flex justify-center items-center mt-5 px-4 overd">
-                <div className="relative w-[1350px] h-[600px] p-2 rounded-lg border border-slate-200 shadow-md overflow-hidden bg-white">
-                    <CreatePrescription
-                        open={prescriptionMedication}
-                        setOpen={setPrescriptionMedication}
+            <div className="flex justify-center items-center mt-5 px-4  ">
+                <div className="relative overflow-y-scroll w-[1390px] h-[600px] p-2 rounded-lg border border-slate-200 shadow-md overflow-hidden bg-white">
+                    <CreatePrescription open={prescriptionMedication} setOpen={setPrescriptionMedication} />
 
-
-                    />
-                    <div className="p-6 border-2 border-[#3B9AB8] rounded-2xl">
-                        {loader ? (<div>
+                    <div className="p-6 border-2 border-[#3B9AB8] rounded-2xl ">
+                        {loader ? (
                             <Loader />
-                        </div>) :
-                            <div>
-                                <span>
-                                    <i>
-                                        <strong className="text-lg uppercase">
-                                            {patientDetails?.newPatient.fullName},
-                                            <span className="text-gray-500 text-sm">
-                                                ({formatDate(patientDetails?.newPatient.dob ?? "")})</span>
-                                        </strong>{" "}
-
-                                    </i>
+                        ) : (
+                            <strong className="text-lg uppercase">
+                                {patientDetails?.newPatient.fullName},{" "}
+                                <span className="text-gray-500 text-sm">
+                                    ({formatDate(patientDetails?.newPatient.dob ?? "")})
                                 </span>
+                            </strong>
+                        )}
+                    </div>
 
-                            </div>
-
-                        }
+                    <div className="p-6 border-2 border-[#3B9AB8] rounded-xl shadow-lg mt-4 bg-gray-50">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-2">Treatment Plan & Advice</h3>
+                        <textarea
+                            className="w-full p-3 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3B9AB8]"
+                            rows={4}
+                            placeholder="Enter treatment advice and recommendations..."
+                            onChange={(e)=>setContent(e.target.value)}
+                        />
                     </div>
 
                     <div className="p-6 border-2 border-[#3B9AB8] rounded-xl shadow-lg mt-4">
@@ -138,11 +121,12 @@ export const PrescriptionComponent = () => {
                                     <div className="p-2">Frequency</div>
                                     <div className="p-2">Duration</div>
                                     <div className="p-2">Meal Timing</div>
+                                    <div className="p-2">Action</div>
                                 </div>
 
-                                {isLoading ? (<div>
+                                {isLoading ? (
                                     <Loader className="mx-7 my-7" />
-                                </div>) : medication?.length > 0 ? (
+                                ) : medication?.length > 0 ? (
                                     medication.map((med: any, index: number) => (
                                         <div
                                             key={index}
@@ -153,27 +137,33 @@ export const PrescriptionComponent = () => {
                                             <div className="p-2">{med.morning ? "|" : "0"} - {med.afternoon ? "|" : "0"} - {med.evening ? "|" : "0"}</div>
                                             <div className="p-2">{med.duration} {med.durationUnit}</div>
                                             <div className="p-2">{med.mealStatus === "aftermeal" ? "After Meal" : "Before Meal"}</div>
-
                                             <div className="p-2 flex justify-center items-center">
-                                                <Button title="Delete" startIcon={<CloseIcon size={28.85} />} variant="secondary" size="md" onClick={() => deleteMedicine(med._id)} />
-
+                                                <Button
+                                                    title="Delete"
+                                                    startIcon={<CloseIcon size={28.85} />}
+                                                    variant="secondary"
+                                                    size="md"
+                                                    onClick={() => deleteMedicine(med._id)}
+                                                />
                                             </div>
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-center text-gray-500 p-4 italic">
-                                        No prescribed medications available.
-                                    </p>
+                                    <p className="text-center text-gray-500 p-4 italic">No prescribed medications available.</p>
                                 )}
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
 
             <div className="flex justify-center p-3">
-                <Button variant="primary" title="Submit" size="md" />
+                <Button variant="primary" title="Submit" size="md" onClick={()=>{
+                    axios.post(`${BACKEND_URL}cms/v1/doctor/treatmentcontent`,{
+                        prescriptionId:prescriptionId,
+                        content
+                    }).then(()=>alert("Prescription submitted successfully")).catch(()=>alert("Error in submitting prescription"));
+                }}/>
             </div>
         </PageWrapper>
     );
