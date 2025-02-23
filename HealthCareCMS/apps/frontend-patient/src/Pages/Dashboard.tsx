@@ -6,7 +6,7 @@ const Dashboard:React.FC=()=>{
     return<>
     <NavbarComponent/>
     <Upper/>
-    <Medication/>
+  
     </>
 }
 export default Dashboard;

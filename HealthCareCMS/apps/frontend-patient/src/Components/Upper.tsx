@@ -31,12 +31,12 @@ const Upper: React.FC = () => {
     
       fetchPrescriptions();
     
-  }, [patientId,loading]);
+  }, [patientId]);
 
   return (
     <div className="mx-6 mb-10">
       <h2 className="text-xl font-semibold mb-4">Ongoing Medication List</h2>
-      <div className="flex-col gap-4 w-full h-[311px] bg-white rounded-[31px] shadow-md border border-white">
+      <div className="flex-col  gap-4 w-full h-[311px] bg-white rounded-[31px] shadow-md border ">
         <div className="space-y-4">
           {loading ? (
             <p className="text-center text-gray-500">Loading...</p>
