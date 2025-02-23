@@ -12,15 +12,14 @@ const Upper: React.FC = () => {
   const patientId = query.get("temp");
   const [prescriptions, setPrescriptions] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  console.log("patietnif",patientId)
+ 
   useEffect(() => {
-    console.log("ou")
     const fetchPrescriptions = async () => {
       
       try {
         setLoading(true);
         console.log("hii i am there")
-        const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/prescription/patient/${patientId}`);
+        const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/prescription/patient/${patientId}?limit=3`);
         console.log("res",response)
         setPrescriptions(response.data.response || []);
         setLoading(false); /// is accessed correctly
@@ -36,9 +35,9 @@ const Upper: React.FC = () => {
 
   return (
     <div className="flex justify-center items-center ">
-      <div className="relative w-[1390px] h-[600px] p-2 ">
+      <div className="relative w-[1390px] p-2 ">
       <h2 className="text-xl font-semibold mb-4 mx-5">Ongoing Medication List</h2>
-      <div className="flex-col  gap-4 w-full h-[311px] bg-gray-100 border-b-blue-300 rounded-[31px] shadow-md  ">
+      <div className="flex-col  gap-4 w-full  bg-gray-100 border-b-blue-300 rounded-[31px] shadow-md  ">
         <div className=" pt-2 space-y-4">
           {loading ? (
             <p className="text-center text-gray-500">Loading...</p>
@@ -70,7 +69,10 @@ const Upper: React.FC = () => {
             <p className="text-center text-gray-500">No prescriptions found</p>
           )}
           <div className="flex justify-center items-center my-4">
-            <Button   title="View More" size="md" variant="secondary" />
+            <Button onClick={()=>{
+              navigate(`allprescriptions/?temp=${patientId}`);
+              //patient-dashboard/?temp=${id}
+            }}  title="View More" size="md" variant="secondary" />
           </div>
         </div>
       </div>
