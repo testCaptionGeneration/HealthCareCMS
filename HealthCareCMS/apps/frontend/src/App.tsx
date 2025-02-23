@@ -8,6 +8,7 @@ import DoctorDashboard from "./Dashboard/DoctorDashboard";
 import PatientDashboard from "./Dashboard/PatientDashboard";
 import ProtectedRoute from "./Protected/ProtectedRoute";
 import { PatientPage } from './Pages/Patient';
+import { PastPrescriptionPage } from './Pages/PastPrescription';
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
 
     <Route path="/cms/v1/doctor/dashboard/:DoctorId" element={<Dashboard />} />
     <Route path="/cms/v1/doctor/patient/prescription/:prescriptionId" element={<PrescriptionComponent />} />
+    <Route path="/cms/v1/doctor/patient/pastPrescription/:prescriptionId/:patientId" element={<PastPrescriptionPage />} />
     <Route path="/cms/v1/doctor/search/patientDetails/:doctorId/:patientId" element={<PatientPage />} />
 
     <Route element={<ProtectedRoute />}>

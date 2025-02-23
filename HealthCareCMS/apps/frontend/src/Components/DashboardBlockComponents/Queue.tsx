@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Button } from "../Inputs/Button";
 import { CreatePatient } from "../../Creation/CreatePatientDetails";
-import { CardWrapper } from "../../Wrapper/CardWrapper";
 import { DashboardCard } from "../../Wrapper/DashboardCardWrapper";
-import { Search } from "../SearchPopUp";
+import { Search } from "../PopUps/SearchPopUp";
 
 export const QueueCard = () => {
   const [openCreator, setOpenCreator] = useState(false);

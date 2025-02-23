@@ -8,6 +8,7 @@ const useQuery = () => {
 };
 const Upper: React.FC = () => {
   const query = useQuery();
+  const navigate = useNavigate();
   const patientId = query.get("temp");
   const [prescriptions, setPrescriptions] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -34,37 +35,45 @@ const Upper: React.FC = () => {
   }, [patientId]);
 
   return (
-    <div className="mx-6 mb-10">
-      <h2 className="text-xl font-semibold mb-4">Ongoing Medication List</h2>
-      <div className="flex-col  gap-4 w-full h-[311px] bg-white rounded-[31px] shadow-md border ">
-        <div className="space-y-4">
+    <div className="flex justify-center items-center ">
+      <div className="relative w-[1390px] h-[600px] p-2 ">
+      <h2 className="text-xl font-semibold mb-4 mx-5">Ongoing Medication List</h2>
+      <div className="flex-col  gap-4 w-full h-[311px] bg-gray-100 border-b-blue-300 rounded-[31px] shadow-md  ">
+        <div className=" pt-2 space-y-4">
           {loading ? (
             <p className="text-center text-gray-500">Loading...</p>
           ) : prescriptions.length > 0 ? (
             prescriptions.map((prescription, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between bg-white rounded-[14px] shadow-md m-4 hover:shadow-lg transition-shadow duration-200"
+                className="flex items-center border-b odd:bg-gray-50 even:bg-white items-cente border-slate-400 justify-between bg-white rounded-[14px] shadow-md m-4 hover:shadow-lg transition-shadow duration-200"
               >
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                  <div className="w-12 h-12 m-3 p-3 flex items-center bg-gray-200 rounded-full">
+                    <div className="pl-1">  {prescription.doctorName.charAt(0).toUpperCase()}</div>
+                  </div>
                   <div>
-                    <h3 className="text-lg font-medium">{prescription.doctorName}</h3>
-                    <p className="text-sm text-gray-600">
+                    <h3 className="text-lg font-medium pl-2">{prescription.doctorName}</h3>
+                    <p className="text-sm pl-2 text-gray-600">
                       {new Date(prescription.date).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
-                <Button title="Prescription" size="md" variant="secondary" />
+                <div className="pr-3">
+                <Button onClick={() =>
+                    navigate(`/patient/pastPrescription/${prescription._id}/${patientId}`)
+                  } title="Prescription" size="md" variant="secondary" />
+                  </div>
               </div>
             ))
           ) : (
             <p className="text-center text-gray-500">No prescriptions found</p>
           )}
           <div className="flex justify-center items-center my-4">
-            <Button title="View More" size="md" variant="secondary" />
+            <Button   title="View More" size="md" variant="secondary" />
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
