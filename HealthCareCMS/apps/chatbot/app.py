@@ -30,6 +30,14 @@ def get_substitutes(medicine_name):
     substitutes = row.iloc[0][['substitute0', 'substitute1', 'substitute2', 'substitute3', 'substitute4']].dropna().tolist()
     return substitutes if substitutes else None
 
+# Function to get side effects
+def get_side_effects(medicine_name):
+    row = df[df['name'].str.lower() == medicine_name.lower()]
+    if row.empty:
+        return None
+    side_effects = row.iloc[0][[col for col in df.columns if col.startswith('sideEffect')]].dropna().tolist()
+    return side_effects if side_effects else None
+
 # AI function to determine specialist based on symptoms
 def get_specialist_recommendation(user_query):
     prompt = (
@@ -66,6 +74,24 @@ def generate_ai_response(user_query, substitutes):
     )
     return response.choices[0].message.content
 
+# AI-generated response for side effects
+def generate_side_effects_response(medicine_name, side_effects):
+    prompt = (
+        f"User asked about side effects of {medicine_name}. The known side effects are: "
+        f"{', '.join(side_effects) if side_effects else 'None found'}.\n"
+        "Provide a concise response (less than 100 words) with a disclaimer that the user should consult a doctor."
+    )
+
+    response = openai.chat.completions.create(
+        model="gpt-4o-mini-2024-07-18",
+        max_tokens=150,
+        messages=[
+            {"role": "system", "content": "You are a medical assistant providing information on medicine side effects."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return response.choices[0].message.content
+
 # API to start chat with options
 @app.route("/start_chat", methods=["GET"])
 def start_chat():
@@ -73,7 +99,8 @@ def start_chat():
         "message": "Hello! How may I assist you?",
         "options": [
             {"text": "Find Medicine Substitute", "value": "substitute"},
-            {"text": "Find Doctor Specialist", "value": "specialist"}
+            {"text": "Find Doctor Specialist", "value": "specialist"},
+            {"text": "Check Side Effects", "value": "side_effects"}  # Added new button
         ]
     })
 
@@ -117,10 +144,33 @@ def get_medicine_info():
         "ai_response": ai_response 
     })
 
+# API to check side effects
+@app.route("/get_side_effects", methods=["GET"])
+def get_side_effects_api():
+    medicine_name = request.args.get("medicine")
+    if not medicine_name:
+        return jsonify({"error": "Please provide a medicine name."}), 400
+
+    # Find the best match for the medicine name
+    matched_meds = find_matching_medicines(medicine_name)
+    if not matched_meds:
+        return jsonify({"error": "No matching medicine found."}), 404
+
+    # Use the first matched medicine to fetch side effects
+    best_match = matched_meds[0]
+    side_effects = get_side_effects(best_match)
+    ai_response = generate_side_effects_response(best_match, side_effects)
+
+    return jsonify({
+        "medicine": best_match,
+        "side_effects": side_effects if side_effects else [],
+        "ai_response": ai_response
+    })
+
 # Route to load chatbot UI
 @app.route("/")
 def index():
     return render_template("index.html")
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5002)
