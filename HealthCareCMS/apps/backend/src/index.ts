@@ -66,9 +66,9 @@ wss.on("connection", (ws:WebSocket, req) => {
 });
 
 async function main() {
-  await mongoose.connect(db_url).then(() => console.log("Connection eshatablished with database")).catch((e) => console.log(e));
+  await mongoose.connect(process.env.MONGO_URL).then(() => console.log("Connection eshatablished with database")).catch((e) => console.log(e));
 
-  app.listen(process.env.PORT, () => console.log(`App listening to ${process.env.PORT}`));
+  app.listen(port, () => console.log(`App listening to ${process.env.PORT}`));
 }
 main();
 
