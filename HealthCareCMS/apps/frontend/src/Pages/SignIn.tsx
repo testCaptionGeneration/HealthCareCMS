@@ -74,9 +74,30 @@ const SignIn: React.FC = () => {
         } else {
             toast.error(data.message || "Sign in failed");
         }
-    } catch (error) {
-        console.error("Sign in error:", error);
-        toast.error("An error occurred during sign in");
+      
+       
+
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        toast.success("Sign in successful!");
+        if(formData.usertype==="doctor"){
+          console.log("req aayi")
+          navigate(`/cms/v1/doctor/dashboard/${data.doctor.id}`);
+        }
+        else if(formData.usertype==="patient"){
+             console.log("patient k liye req aayi")
+          console.log("hirre")
+          setTimeout(() => {
+            window.location.href = `http://localhost:5174/patient/?temp=${data.patient.phone}`;
+          }, 100);
+          
+        }
+       
+      } else {
+        toast.error(data.message || "Sign in failed");
+      }
+    } catch {
+      toast.error("An error occurred during sign in");
     }
 };
 
@@ -88,11 +109,14 @@ const SignIn: React.FC = () => {
           <img
             src="/assets/images/Signup_bg.png"
             alt="Frame"
-            className="min-h-full min-w-screen  "
+            className="min-h-screen  min-w-screen object-cover "
           />
           </div>
         </div>
       </div>
+    
+
+
 
       <div className="min-w-screen flex flex-col justify-center items-center px-12 absolute py-10 ">
         <div className="flex items-center justify-center mb-2">

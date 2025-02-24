@@ -1,24 +1,37 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { LogoIcon } from "../Icons/LogoIcon";
 import { Button } from "./Inputs/Button";
 
-const defaultStyle = "px-4 mx-2 font-bold text-[#3B9AB8]";
+const defaultStyle = "px-4 mx-2 font-bold text-[#3B9AB8] cursor-pointer";
 
 interface NavbarComponentProps {
-  doctorId?: string;
+  DoctorId?: string;
 }
 
-export const NavbarComponent: React.FC<NavbarComponentProps> = ({ doctorId }) => {
+export const NavbarComponent: React.FC<NavbarComponentProps> = ({ DoctorId }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleViewAnalysis = () => {
-    if (!doctorId) {
+    if (!DoctorId) {
       console.error("Doctor ID is not available");
       return;
     }
-    navigate(`/cms/v1/doctor/analysis/${doctorId}`);
+    navigate(`/cms/v1/doctor/analysis/${DoctorId}`);
+  };
+
+  useEffect(() => {
+    document.body.style.overflow = isSidebarOpen ? "hidden" : "auto";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isSidebarOpen]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.reload();
   };
 
   return (
@@ -30,18 +43,12 @@ export const NavbarComponent: React.FC<NavbarComponentProps> = ({ doctorId }) =>
             <LogoIcon size={28.84} />
             <span className="ml-2">HealthCareCMS</span>
           </div>
-
           <div className="flex items-center">
-            <div className={`${defaultStyle} cursor-pointer`}>Records</div>
-            <div 
-              className={`${defaultStyle} cursor-pointer`}
-              onClick={handleViewAnalysis}
-            >
-              View Analysis
-            </div>
-            <div className={`${defaultStyle} cursor-pointer`}>Connect</div>
-            <div className={`${defaultStyle} cursor-pointer`}>Profile</div>
-            <Button size="md" variant="primary" title="Logout" />
+            <Link to="/records" className={defaultStyle}>Records</Link>
+            <div className={defaultStyle} onClick={handleViewAnalysis}>View Analysis</div>
+            <Link to="/connect" className={defaultStyle}>Connect</Link>
+            <Link to="/profile" className={defaultStyle}>Profile</Link>
+            <Button size="md" variant="primary" title="Logout" onClick={handleLogout} />
           </div>
         </div>
       </div>
@@ -53,8 +60,8 @@ export const NavbarComponent: React.FC<NavbarComponentProps> = ({ doctorId }) =>
             <LogoIcon size={28.84} />
             <span className="ml-2">HealthCareCMS</span>
           </div>
-
           <button
+            aria-label="Open Menu"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="p-2 text-[#3B9AB8] border border-slate-300 rounded-md"
           >
@@ -63,14 +70,11 @@ export const NavbarComponent: React.FC<NavbarComponentProps> = ({ doctorId }) =>
         </div>
 
         {/* Sidebar Menu */}
-        <div
-          className={`fixed top-0 left-0 h-full bg-white shadow-md transform ${
-            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } transition-transform duration-300 z-50 w-[250px]`}
-        >
+        <div className={`fixed top-0 left-0 h-full bg-white shadow-md transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 z-50 w-[250px]`}>
           <div className="p-4 flex items-center justify-between border-b border-slate-300">
             <span className="text-lg font-bold text-[#3B9AB8]">Menu</span>
             <button
+              aria-label="Close Menu"
               onClick={() => setIsSidebarOpen(false)}
               className="p-2 text-[#3B9AB8] border border-slate-300 rounded-md"
             >
@@ -78,17 +82,12 @@ export const NavbarComponent: React.FC<NavbarComponentProps> = ({ doctorId }) =>
             </button>
           </div>
           <div className="flex flex-col mt-4 space-y-4">
-            <div className={`${defaultStyle} cursor-pointer px-6`}>Records</div>
-            <div 
-              className={`${defaultStyle} cursor-pointer px-6`}
-              onClick={handleViewAnalysis}
-            >
-              View Analysis
-            </div>
-            <div className={`${defaultStyle} cursor-pointer px-6`}>Connect</div>
-            <div className={`${defaultStyle} cursor-pointer px-6`}>Profile</div>
+            <Link to="/records" className={`${defaultStyle} px-6`} onClick={() => setIsSidebarOpen(false)}>Records</Link>
+            <div className={`${defaultStyle} px-6`} onClick={handleViewAnalysis}>View Analysis</div>
+            <Link to="/connect" className={`${defaultStyle} px-6`} onClick={() => setIsSidebarOpen(false)}>Connect</Link>
+            <Link to="/profile" className={`${defaultStyle} px-6`} onClick={() => setIsSidebarOpen(false)}>Profile</Link>
             <div className="px-6">
-              <Button size="md" variant="primary" title="Logout" />
+              <Button size="md" variant="primary" title="Logout" onClick={handleLogout} />
             </div>
           </div>
         </div>

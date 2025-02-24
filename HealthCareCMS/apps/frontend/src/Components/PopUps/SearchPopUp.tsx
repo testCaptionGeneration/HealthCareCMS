@@ -1,8 +1,8 @@
 import { useRef} from "react"
-import { CloseIcon } from "../Icons/CloseIcon"
-import { Button } from "./Inputs/Button"
-import { Input } from "./Inputs/Input"
-import { BACKEND_URL } from "../config"
+import { CloseIcon } from "../../Icons/CloseIcon"
+import { Button } from "../Inputs/Button"
+import { Input } from "../Inputs/Input"
+import { BACKEND_URL } from "../../config"
 import axios from "axios"
 import { useNavigate, useParams } from "react-router-dom"
 
@@ -12,7 +12,6 @@ export const Search = ({ open, setOpen }: { open: boolean, setOpen: (value: bool
     const phNumber=useRef<HTMLInputElement | null>(null);
     const dateOfBirth=useRef<HTMLInputElement | null>(null); 
     const navigate=useNavigate(); 
-    
 
     const searchPatient=async()=>{
         const phoneNumber=phNumber.current?.value;
@@ -33,10 +32,10 @@ export const Search = ({ open, setOpen }: { open: boolean, setOpen: (value: bool
                 </span>
             <div className="flex-col justify-center font-bold text-2xl text-gray-400 mb-5">
                 
-                <div>
+                <div className="text-gray-700">
             Search for Patient 
             </div>
-            <div className="font-medium text-sm">
+            <div className="font-medium text-sm italic">
             Please enter patient's phone number and date of birth to access patient details.
             </div>
             </div>

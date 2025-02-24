@@ -44,8 +44,15 @@ const PostDisease = new mongoose.Schema({
 
 const Prescirption=new Schema({
     doctorName:{type:String, required:true}, 
+    patientName:{type:String, required:true},
+    doctorId:{type:mongoose.Types.ObjectId, required:true},
     patientId:{type:mongoose.Types.ObjectId, required:true},
-    date:{type:Date, default:Date.now()},
+    date:{type:Date, default:new Date(Date.now()), reqired:true},
+})
+
+const TreatmentSchema=new Schema({
+    prescriptionId:{type:mongoose.Types.ObjectId, required:true},
+    content:{type:String, required:true, trim:true}
 })
 
 export const PatientModel = model("patient", PatientSchema);
@@ -53,3 +60,4 @@ export const MedicationModel = model("Medication", MedicationScehma);
 export const DiseaseModel=model("Disease",DiseaseSchema);
 export const PrescirptionModel=model("Prescirption",Prescirption);
 export const PostDiseasesModel = model("PostDiseases",PostDisease) ;
+export const TreatmentModel=model("Treatment",TreatmentSchema);

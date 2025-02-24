@@ -1,15 +1,18 @@
+import { useEffect, useState } from "react";
+import {useParams } from "react-router-dom";
 import axios from "axios";
+
 import { Button } from "../Components/Inputs/Button";
 import { PageWrapper } from "../Wrapper/PageWrapper";
-import { BACKEND_URL } from "../config";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { CreatePrescription } from "../Creation/CreatePrescription";
-import { AddIcon } from "../Icons/AddIcon";
-import { useMedicines } from "../hooks/useMedicines";
-import { CloseIcon } from "../Icons/CloseIcon";
 import { Loader } from "../Components/LoaderSckelton";
 import { AddDiseasePopup } from "../Components/Inputs/AddDiseasePopup"; 
+
+import { BACKEND_URL } from "../config";
+import { useMedicines } from "../hooks/useMedicines";
+
+import { AddIcon } from "../Icons/AddIcon";
+import { CloseIcon } from "../Icons/CloseIcon";
 
 interface Patient {
     fullName: string;
@@ -28,16 +31,18 @@ const formatDate = (dob: string) => {
 };
 
 export const PrescriptionComponent = () => {
+    const { prescriptionId } = useParams<{ prescriptionId: string }>();
     const [prescriptionMedication, setPrescriptionMedication] = useState(false);
     const [diseasePopupOpen, setDiseasePopupOpen] = useState(false); // Add state for disease popup
     const [patientDetails, setPatientDetails] = useState<PatientDetailsResponse | null>(null);
     const [loader, setLoader] = useState(true);
-    const { prescriptionId } = useParams<{ prescriptionId: string }>();
     const [refresh, setRefresh] = useState(true);
+    const [content,setContent]=useState<string>('');
 
     useEffect(() => {
-        console.log(prescriptionId);
         const fetchDetails = async () => {
+            if (!prescriptionId) return;
+
             setLoader(true);
             try {
                 if (!prescriptionId) return;
@@ -52,9 +57,10 @@ export const PrescriptionComponent = () => {
                     console.log(error);
                 }
             } catch (error) {
-                console.error("An error occurred:", error);
+                console.error("Error fetching patient details:", error);
+            } finally {
+                setLoader(false);
             }
-            setLoader(false);
         };
 
         fetchDetails();
@@ -72,53 +78,38 @@ export const PrescriptionComponent = () => {
             await axios.delete(`${BACKEND_URL}cms/v1/doctor/medication/${medicineId}`);
             setRefresh((prev) => !prev);
         } catch (error) {
-            console.log("Error deleting medicine:", error);
+            console.error("Error deleting medicine:", error);
         }
     };
 
-    const { medication, isLoading } = useMedicines({
-        prescriptionId: prescriptionId || "",
-        refresh
-    });
+    const { medication, isLoading } = useMedicines({ prescriptionId: prescriptionId || "", refresh });
 
     return (
         <PageWrapper>
-            <div className="flex justify-center items-center mt-5 px-4 overd">
-                <div className="relative w-[1350px] h-[600px] p-2 rounded-lg border border-slate-200 shadow-md overflow-hidden bg-white">
-                    <CreatePrescription
-                        open={prescriptionMedication}
-                        setOpen={setPrescriptionMedication}
-                    />
-                    <AddDiseasePopup 
-                        open={diseasePopupOpen}
-                        setOpen={setDiseasePopupOpen}
-                    />
-                    <div className="p-6 border-2 border-[#3B9AB8] rounded-2xl flex justify-between items-center">
+            <div className="flex justify-center items-center mt-5 px-4  ">
+                <div className="relative overflow-y-scroll w-[1390px] h-[600px] p-2 rounded-lg border border-slate-200 shadow-md overflow-hidden bg-white">
+                    <CreatePrescription open={prescriptionMedication} setOpen={setPrescriptionMedication} />
+
+                    <div className="p-6 border-2 border-[#3B9AB8] rounded-2xl ">
                         {loader ? (
-                            <div>
-                                <Loader />
-                            </div>
+                            <Loader />
                         ) : (
-                            <div>
-                                <span>
-                                    <i>
-                                        <strong className="text-lg uppercase">
-                                            {patientDetails?.newPatient.fullName},
-                                            <span className="text-gray-500 text-sm">
-                                                ({formatDate(patientDetails?.newPatient.dob ?? "")})
-                                            </span>
-                                        </strong>{" "}
-                                    </i>
+                            <strong className="text-lg uppercase">
+                                {patientDetails?.newPatient.fullName},{" "}
+                                <span className="text-gray-500 text-sm">
+                                    ({formatDate(patientDetails?.newPatient.dob ?? "")})
                                 </span>
-                            </div>
+                            </strong>
                         )}
-                        {/* Add Disease Button */}
-                        <Button
-                            startIcon={<AddIcon size={20} />}
-                            size="md"
-                            variant="secondary"
-                            title="Add Disease"
-                            onClick={() => setDiseasePopupOpen(true)} // Added onClick handler here
+                    </div>
+
+                    <div className="p-6 border-2 border-[#3B9AB8] rounded-xl shadow-lg mt-4 bg-gray-50">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-2">Treatment Plan & Advice</h3>
+                        <textarea
+                            className="w-full p-3 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3B9AB8]"
+                            rows={4}
+                            placeholder="Enter treatment advice and recommendations..."
+                            onChange={(e)=>setContent(e.target.value)}
                         />
                     </div>
 
@@ -142,6 +133,7 @@ export const PrescriptionComponent = () => {
                                     <div className="p-2">Frequency</div>
                                     <div className="p-2">Duration</div>
                                     <div className="p-2">Meal Timing</div>
+                                    <div className="p-2">Action</div>
                                 </div>
 
                                 {isLoading ? (
@@ -159,7 +151,6 @@ export const PrescriptionComponent = () => {
                                             <div className="p-2">{med.morning ? "|" : "0"} - {med.afternoon ? "|" : "0"} - {med.evening ? "|" : "0"}</div>
                                             <div className="p-2">{med.duration} {med.durationUnit}</div>
                                             <div className="p-2">{med.mealStatus === "aftermeal" ? "After Meal" : "Before Meal"}</div>
-
                                             <div className="p-2 flex justify-center items-center">
                                                 <Button
                                                     title="Delete"
@@ -172,9 +163,7 @@ export const PrescriptionComponent = () => {
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-center text-gray-500 p-4 italic">
-                                        No prescribed medications available.
-                                    </p>
+                                    <p className="text-center text-gray-500 p-4 italic">No prescribed medications available.</p>
                                 )}
                             </div>
                         </div>
@@ -183,7 +172,12 @@ export const PrescriptionComponent = () => {
             </div>
 
             <div className="flex justify-center p-3">
-                <Button variant="primary" title="Submit" size="md" />
+                <Button variant="primary" title="Submit" size="md" onClick={()=>{
+                    axios.post(`${BACKEND_URL}cms/v1/doctor/treatmentcontent`,{
+                        prescriptionId:prescriptionId,
+                        content
+                    }).then(()=>alert("Prescription submitted successfully")).catch(()=>alert("Error in submitting prescription"));
+                }}/>
             </div>
         </PageWrapper>
     );
