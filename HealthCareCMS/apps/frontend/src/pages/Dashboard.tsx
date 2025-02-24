@@ -41,7 +41,7 @@ export const Dashboard = () => {
 
   return (
     <div className="text-slate-700 overflow-y-scroll min-h-screen min-w-screen bg-slate-200">
-      <NavbarComponent />
+      <NavbarComponent DoctorId={DoctorId} />
 
       <div className="flex justify-center mt-6">
         <h1 className="text-3xl md:text-2xl bg-white p-4 rounded-2xl shadow-lg font-semibold text-gray-800">
@@ -62,3 +62,8 @@ export const Dashboard = () => {
     </div>
   );
 };
+
+
+
+
+

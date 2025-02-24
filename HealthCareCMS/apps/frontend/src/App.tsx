@@ -1,15 +1,16 @@
 import './App.css'
-import { PrescriptionComponent } from './pages/Prescription'
-import { Dashboard } from './pages/Dashboard'
+import { PrescriptionComponent } from './Pages/Prescription'
+import { Dashboard } from './Pages/Dashboard'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import SignUp from "./pages/SignUp";
-import SignIn from "./pages/SignIn";
+import SignUp from "./Pages/SignUp";
+import SignIn from "./Pages/SignIn";
 import DoctorDashboard from "./Dashboard/DoctorDashboard";
 import PatientDashboard from "./Dashboard/PatientDashboard";
 import ProtectedRoute from "./Protected/ProtectedRoute";
-import { PatientPage } from './pages/Patient';
-import { PastPrescriptionPage } from './pages/PastPrescription';
-import { OutPatientPage } from './pages/OutPatient';
+import { PatientPage } from './Pages/Patient';
+import { PastPrescriptionPage } from './Pages/PastPrescription';
+import { OutPatientPage } from './Pages/OutPatient';
+import { AnalysisPage } from './Pages/Analysis';
 
 function App() {
 
@@ -26,14 +27,13 @@ function App() {
         <Route path="/cms/v1/doctor/patient/prescription/:prescriptionId" element={<PrescriptionComponent />} />
         <Route path="/cms/v1/doctor/patient/pastPrescription/:prescriptionId/:patientId" element={<PastPrescriptionPage />} />
         <Route path="/cms/v1/doctor/search/patientDetails/:doctorId/:patientId" element={<PatientPage />} />
+        <Route path="/cms/v1/doctor/analysis/:doctorId" element={<AnalysisPage/>}/>
 
-        <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
-        <Route path="/patient-dashboard" element={<PatientDashboard />} />
+      
       </Route>
     </Routes>
   </BrowserRouter>
 
 }
-
 
 export default App;

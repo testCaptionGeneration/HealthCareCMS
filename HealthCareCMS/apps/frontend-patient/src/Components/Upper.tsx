@@ -1,5 +1,5 @@
 import { Button } from "./Button";
-import { useNavigate, useParams,useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../config";
@@ -10,7 +10,13 @@ const Upper: React.FC = () => {
   const query = useQuery();
   const navigate = useNavigate();
   const patientId = query.get("temp");
-  const [prescriptions, setPrescriptions] = useState<any[]>([]);
+  interface Prescription {
+    doctorName: string;
+    date: string;
+    _id: string;
+  }
+
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
  
   useEffect(() => {

@@ -19,6 +19,8 @@ type PatientDetails = {
 type Prescription = {
   _id: string;
   doctorName: string;
+  
+  patientId: string;
   date?: string; 
 };
 
@@ -36,13 +38,30 @@ const formatDate = (dob: string) => {
 };
 
 export const PatientOverview = () => {
-  const { patientId = "" } = useParams();
+  const { patientId = "",doctorId = "" } = useParams();
   const [patientDetails, setPatientDetails] = useState<PatientDetails | null>(null);
+  const [doctorName, setDoctorName] = useState<string>("");
   const [refresh, setRefresh] = useState(true);
   const [loader, setLoader] = useState(true);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
+  // Fetch doctor name
+  useEffect(() => {
+    const getDoctorName = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/prescription/doctor/${doctorId}`);
+        setDoctorName(response.data.name);
+      } catch (error) {
+        console.error("Error fetching doctor details:", error);
+      }
+    };
+    if (doctorId) {
+      getDoctorName();
+    }
+  }, [doctorId]);
+
+  // Fetch patient details
   useEffect(() => {
     const getPatientDetails = async () => {
       setLoader(true);
@@ -56,7 +75,9 @@ export const PatientOverview = () => {
       }
     };
 
-    getPatientDetails();
+    if (patientId) {
+      getPatientDetails();
+    }
   }, [patientId, refresh]);
 
   const { prescriptions = [], loading: prescriptionsLoading } = usePrescriptions({ patientId, refresh });
@@ -75,6 +96,27 @@ export const PatientOverview = () => {
     return timeB - timeA;
   });
 
+  const handleAddPrescription = async () => {
+    try {
+      const response = await axios.post(`${BACKEND_URL}cms/v1/doctor/prescription/presId`, {
+        patientId,
+        doctorName
+      });
+      
+      if (response.data.response._id) {
+        navigate(`/cms/v1/doctor/patient/prescription/${response.data.response._id}`);
+      } else {
+        console.error("No prescription ID received");
+      }
+    } catch (error) {
+      console.error("Error adding prescription:", error);
+    }
+  };
+
+  if (loader) {
+    return <Loader />;
+  }
+
   return (
     <div className="flex flex-col w-full max-w-[1390px] min-h-[650px] shadow-xl rounded-xl border border-slate-300 m-7 p-6 md:min-w-[768px] sm:min-w-full">
       <AddPrescriptionPopUp open={open} setOpen={setOpen} />
@@ -90,7 +132,7 @@ export const PatientOverview = () => {
             title="Add Prescription"
             size="md"
             variant="secondary"
-            onClick={() => setOpen(true)}
+            onClick={()=>setOpen(true)}
           />
         </div>
       )}
@@ -127,7 +169,31 @@ export const PatientOverview = () => {
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-500 italic">No previous prescriptions available.</p>
+          <div>
+            {prescriptions.map((prescription: Prescription) => (
+              <div 
+                key={prescription._id} 
+                className="border flex justify-between items-center border-gray-300 rounded-md p-4 m-2"
+              >
+                <div>
+                  <div className="font-medium">{prescription.doctorName}</div>
+                  <p className="text-gray-500 text-sm">
+                    {prescription.date ? new Date(prescription.date).toLocaleDateString() : "No date"}
+                  </p>
+                </div>
+                <div className="flex justify-end items-center">
+                  <Button 
+                    variant="secondary" 
+                    size="md" 
+                    title="View Prescription"
+                    onClick={() => {
+                      navigate(`/cms/v1/doctor/patient/prescription/${prescription._id}`);
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>

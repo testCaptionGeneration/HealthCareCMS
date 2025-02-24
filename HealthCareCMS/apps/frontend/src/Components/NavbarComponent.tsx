@@ -1,14 +1,27 @@
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // Ensure React Router is installed
+import { Link } from "react-router-dom";
 import { LogoIcon } from "../Icons/LogoIcon";
 import { Button } from "./Inputs/Button";
 
 const defaultStyle = "px-4 mx-2 font-bold text-[#3B9AB8] cursor-pointer";
 
-export const NavbarComponent = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+interface NavbarComponentProps {
+  DoctorId?: string;
+}
 
-  // Prevent background scrolling when sidebar is open
+export const NavbarComponent: React.FC<NavbarComponentProps> = ({ DoctorId }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleViewAnalysis = () => {
+    if (!DoctorId) {
+      console.error("Doctor ID is not available");
+      return;
+    }
+    navigate(`/cms/v1/doctor/analysis/${DoctorId}`);
+  };
+
   useEffect(() => {
     document.body.style.overflow = isSidebarOpen ? "hidden" : "auto";
     return () => {
@@ -18,7 +31,7 @@ export const NavbarComponent = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.reload(); // Ensures logout is effective
+    window.location.reload();
   };
 
   return (
@@ -30,9 +43,9 @@ export const NavbarComponent = () => {
             <LogoIcon size={28.84} />
             <span className="ml-2">HealthCareCMS</span>
           </div>
-
           <div className="flex items-center">
             <Link to="/records" className={defaultStyle}>Records</Link>
+            <div className={defaultStyle} onClick={handleViewAnalysis}>View Analysis</div>
             <Link to="/connect" className={defaultStyle}>Connect</Link>
             <Link to="/profile" className={defaultStyle}>Profile</Link>
             <Button size="md" variant="primary" title="Logout" onClick={handleLogout} />
@@ -47,14 +60,9 @@ export const NavbarComponent = () => {
             <LogoIcon size={28.84} />
             <span className="ml-2">HealthCareCMS</span>
           </div>
-
-          {/* Hamburger Menu Button */}
           <button
             aria-label="Open Menu"
-            onClick={() => {
-              setIsSidebarOpen(!isSidebarOpen);
-              console.log("Sidebar state:", !isSidebarOpen);
-            }}
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="p-2 text-[#3B9AB8] border border-slate-300 rounded-md"
           >
             ☰
@@ -62,15 +70,9 @@ export const NavbarComponent = () => {
         </div>
 
         {/* Sidebar Menu */}
-        <div
-          className={`fixed top-0 left-0 h-full bg-white shadow-md transform ${
-            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } transition-transform duration-300 z-50 w-[250px]`}
-        >
+        <div className={`fixed top-0 left-0 h-full bg-white shadow-md transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 z-50 w-[250px]`}>
           <div className="p-4 flex items-center justify-between border-b border-slate-300">
             <span className="text-lg font-bold text-[#3B9AB8]">Menu</span>
-
-            {/* Close Sidebar Button */}
             <button
               aria-label="Close Menu"
               onClick={() => setIsSidebarOpen(false)}
@@ -79,9 +81,9 @@ export const NavbarComponent = () => {
               ✕
             </button>
           </div>
-
           <div className="flex flex-col mt-4 space-y-4">
             <Link to="/records" className={`${defaultStyle} px-6`} onClick={() => setIsSidebarOpen(false)}>Records</Link>
+            <div className={`${defaultStyle} px-6`} onClick={handleViewAnalysis}>View Analysis</div>
             <Link to="/connect" className={`${defaultStyle} px-6`} onClick={() => setIsSidebarOpen(false)}>Connect</Link>
             <Link to="/profile" className={`${defaultStyle} px-6`} onClick={() => setIsSidebarOpen(false)}>Profile</Link>
             <div className="px-6">
