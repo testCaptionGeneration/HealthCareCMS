@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useRef} from "react"
 import { CloseIcon } from "../Icons/CloseIcon"
 import { Button } from "./Inputs/Button"
 import { Input } from "./Inputs/Input"
@@ -7,11 +7,12 @@ import axios from "axios"
 import { useNavigate, useParams } from "react-router-dom"
 
 export const Search = ({ open, setOpen }: { open: boolean, setOpen: (value: boolean) => void }) => {
-    const doctorId=useParams().DoctorId;
+    const doctorId = useParams().doctorId;
+
     const phNumber=useRef<HTMLInputElement | null>(null);
     const dateOfBirth=useRef<HTMLInputElement | null>(null); 
     const navigate=useNavigate(); 
-    const [patientId, setPatientId]=useState("");
+    
 
     const searchPatient=async()=>{
         const phoneNumber=phNumber.current?.value;

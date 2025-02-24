@@ -9,6 +9,7 @@ import { AddIcon } from "../Icons/AddIcon";
 import { useMedicines } from "../hooks/useMedicines";
 import { CloseIcon } from "../Icons/CloseIcon";
 import { Loader } from "../Components/LoaderSckelton";
+import { AddDiseasePopup } from "../Components/Inputs/AddDiseasePopup"; 
 
 interface Patient {
     fullName: string;
@@ -22,12 +23,13 @@ interface PatientDetailsResponse {
 
 const formatDate = (dob: string) => {
     if (!dob) return "";
-    const age= new Date().getFullYear() - new Date(dob).getFullYear();
+    const age = new Date().getFullYear() - new Date(dob).getFullYear();
     return `${age} Years Old`;
-  };
+};
 
 export const PrescriptionComponent = () => {
     const [prescriptionMedication, setPrescriptionMedication] = useState(false);
+    const [diseasePopupOpen, setDiseasePopupOpen] = useState(false); // Add state for disease popup
     const [patientDetails, setPatientDetails] = useState<PatientDetailsResponse | null>(null);
     const [loader, setLoader] = useState(true);
     const { prescriptionId } = useParams<{ prescriptionId: string }>();
@@ -40,12 +42,8 @@ export const PrescriptionComponent = () => {
             try {
                 if (!prescriptionId) return;
                 try {
-
                     const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/prescription/${prescriptionId}`);
-
-
                     console.log(response.data.response.patientId);
-
                     const res = await axios.get<PatientDetailsResponse>(
                         `${BACKEND_URL}cms/v1/doctor/patientdetails/${response.data.response.patientId}`
                     );
@@ -64,14 +62,10 @@ export const PrescriptionComponent = () => {
         const handleMedicineUpdate = () => {
             setRefresh((prev) => !prev);
         };
- 
+
         window.addEventListener("medicineUpdated", handleMedicineUpdate);
         return () => window.removeEventListener("medicineUpdated", handleMedicineUpdate);
     }, [prescriptionId, refresh]);
-
-
-
-
 
     const deleteMedicine = async (medicineId: string) => {
         try {
@@ -94,28 +88,38 @@ export const PrescriptionComponent = () => {
                     <CreatePrescription
                         open={prescriptionMedication}
                         setOpen={setPrescriptionMedication}
-
-
                     />
-                    <div className="p-6 border-2 border-[#3B9AB8] rounded-2xl">
-                        {loader ? (<div>
-                            <Loader />
-                        </div>) :
+                    <AddDiseasePopup 
+                        open={diseasePopupOpen}
+                        setOpen={setDiseasePopupOpen}
+                    />
+                    <div className="p-6 border-2 border-[#3B9AB8] rounded-2xl flex justify-between items-center">
+                        {loader ? (
+                            <div>
+                                <Loader />
+                            </div>
+                        ) : (
                             <div>
                                 <span>
                                     <i>
                                         <strong className="text-lg uppercase">
                                             {patientDetails?.newPatient.fullName},
                                             <span className="text-gray-500 text-sm">
-                                                ({formatDate(patientDetails?.newPatient.dob ?? "")})</span>
+                                                ({formatDate(patientDetails?.newPatient.dob ?? "")})
+                                            </span>
                                         </strong>{" "}
-
                                     </i>
                                 </span>
-
                             </div>
-
-                        }
+                        )}
+                        {/* Add Disease Button */}
+                        <Button
+                            startIcon={<AddIcon size={20} />}
+                            size="md"
+                            variant="secondary"
+                            title="Add Disease"
+                            onClick={() => setDiseasePopupOpen(true)} // Added onClick handler here
+                        />
                     </div>
 
                     <div className="p-6 border-2 border-[#3B9AB8] rounded-xl shadow-lg mt-4">
@@ -140,10 +144,12 @@ export const PrescriptionComponent = () => {
                                     <div className="p-2">Meal Timing</div>
                                 </div>
 
-                                {isLoading ? (<div>
-                                    <Loader className="mx-7 my-7" />
-                                </div>) : medication?.length > 0 ? (
-                                    medication.map((med: any, index: number) => (
+                                {isLoading ? (
+                                    <div>
+                                        <Loader className="mx-7 my-7" />
+                                    </div>
+                                ) : medication?.length > 0 ? (
+                                    medication.map((med: { medication: string; dose: string; doseUnit: string; morning: boolean; afternoon: boolean; evening: boolean; duration: string; durationUnit: string; mealStatus: string; _id: string }, index: number) => (
                                         <div
                                             key={index}
                                             className="grid grid-cols-6 text-center p-3 text-gray-600 border-b odd:bg-gray-50 even:bg-white items-center"
@@ -155,8 +161,13 @@ export const PrescriptionComponent = () => {
                                             <div className="p-2">{med.mealStatus === "aftermeal" ? "After Meal" : "Before Meal"}</div>
 
                                             <div className="p-2 flex justify-center items-center">
-                                                <Button title="Delete" startIcon={<CloseIcon size={28.85} />} variant="secondary" size="md" onClick={() => deleteMedicine(med._id)} />
-
+                                                <Button
+                                                    title="Delete"
+                                                    startIcon={<CloseIcon size={28.85} />}
+                                                    variant="secondary"
+                                                    size="md"
+                                                    onClick={() => deleteMedicine(med._id)}
+                                                />
                                             </div>
                                         </div>
                                     ))
@@ -167,7 +178,6 @@ export const PrescriptionComponent = () => {
                                 )}
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>

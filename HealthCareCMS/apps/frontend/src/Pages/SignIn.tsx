@@ -49,29 +49,36 @@ const SignIn: React.FC = () => {
     if (!isValid) return;
 
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/${formData.usertype === "doctor" ? "doctors" : "patients"}/signin`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: formData.email, password: formData.password }),
+        const response = await fetch(
+            `http://localhost:3000/api/${formData.usertype === "doctor" ? "doctors" : "patients"}/signin`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: formData.email, password: formData.password }),
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+            localStorage.setItem("token", data.token);
+            
+            // Store doctorId if user is a doctor
+            if (formData.usertype === "doctor" && data.doctor?.id) {
+                localStorage.setItem("doctorId", data.doctor.id);
+                console.log("Doctor ID stored:", data.doctor.id);
+            }
+
+            toast.success("Sign in successful!");
+            navigate(formData.usertype === "doctor" ? `/cms/v1/doctor/dashboard/${data.doctor.id}` : "/patient-dashboard");
+        } else {
+            toast.error(data.message || "Sign in failed");
         }
-      );
-
-      const data = await response.json();
-      console.log(data.doctor.id);
-
-      if (response) {
-        localStorage.setItem("token", data.token);
-        toast.success("Sign in successful!");
-        navigate(formData.usertype === "doctor" ? `/cms/v1/doctor/dashboard/${data.doctor.id}` : "/patient-dashboard");
-      } else {
-        toast.error(data.message || "Sign in failed");
-      }
-    } catch {
-      toast.error("An error occurred during sign in");
+    } catch (error) {
+        console.error("Sign in error:", error);
+        toast.error("An error occurred during sign in");
     }
-  };
+};
 
   return (
     <div className="flex bg-[#F9FAFB] min-h-screen fixed ">

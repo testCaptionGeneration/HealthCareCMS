@@ -25,12 +25,22 @@ const MedicationScehma = new Schema({
     mealStatus: String
 })
 
-const DiseaseSchema=new Schema({
-    doctorId:{type:mongoose.Types.ObjectId, required:true},
-    patientId:{type:mongoose.Types.ObjectId, required:true},
-    disease:String,
-    severity:String
-})
+const DiseaseSchema = new Schema({
+    doctorId: { type: mongoose.Types.ObjectId, required: true, ref: "Doctor" },
+    patientId: { type: mongoose.Types.ObjectId, required: true, ref: "Patient" },
+    disease: { type: String, required: true, trim: true, lowercase: true },
+    severity: { type: String, required: true, trim: true, lowercase: true }
+});
+
+const PostDisease = new mongoose.Schema({
+    doctorId: { type: mongoose.Types.ObjectId, required: true, ref: "Doctor" },
+    disease: { type: String, required: true, trim: true, lowercase: true },
+    severity: { type: String, required: true, trim: true, lowercase: true }
+});
+
+
+
+
 
 const Prescirption=new Schema({
     doctorName:{type:String, required:true}, 
@@ -42,3 +52,4 @@ export const PatientModel = model("patient", PatientSchema);
 export const MedicationModel = model("Medication", MedicationScehma);
 export const DiseaseModel=model("Disease",DiseaseSchema);
 export const PrescirptionModel=model("Prescirption",Prescirption);
+export const PostDiseasesModel = model("PostDiseases",PostDisease) ;

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "../Inputs/Button";
 import { CreatePatient } from "../../Creation/CreatePatientDetails";
-import { CardWrapper } from "../../Wrapper/CardWrapper";
+
 import { DashboardCard } from "../../Wrapper/DashboardCardWrapper";
 import { Search } from "../SearchPopUp";
 
@@ -48,4 +48,3 @@ export const QueueCard = () => {
     </DashboardCard>
   );
 };
-

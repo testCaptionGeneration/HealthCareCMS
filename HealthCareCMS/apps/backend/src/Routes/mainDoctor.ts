@@ -1,11 +1,14 @@
 import express, { Router } from "express";
-import { DiseaseModel, MedicationModel, PatientModel, PrescirptionModel } from "../db";
+import { DiseaseModel, MedicationModel, PatientModel, PostDiseasesModel, PrescirptionModel } from "../db";
 import { stringify } from "querystring";
 const doctorRouter = Router();
 import mongoose from "mongoose";
 import { prescriptionRouter } from "./prescirption";
 import { DoctorModel } from "../models/DoctorSchema";
+import { Request, Response } from "express";
 const app=express();
+const cors = require('cors');
+app.use(cors());
 
 // app.use('/prescription',prescriptionRouter);
 
@@ -136,27 +139,7 @@ doctorRouter.delete('/medication/:medicineId', async (req, res) => {
     }
 });
 
-doctorRouter.post('/disease',async (req,res)=>{
-    try{
-    const {disease,severity,patientId,doctorId}=req.body;
-    
-    await DiseaseModel.create({
-        doctorId,
-        patientId,
-        disease,
-        severity
-    });
 
-    res.status(200).json({
-        message:"Disease Added"
-    })
-}
-catch(error){
-    res.status(502).json({
-        message:`An error occured : ${error}`
-    })
-}
-})
 
 doctorRouter.get('/search/:phone/:dob', (req, res) => {
   try {
@@ -268,6 +251,84 @@ doctorRouter.get('/prescription/doctor/:doctorId', async (req, res) => {
 }
 
 )
+
+
+const getDiseases = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const searchQuery = req.params.searchQuery;
+
+        const diseases = await DiseaseModel.find({
+            disease: { $regex: new RegExp(searchQuery, 'i') } 
+        });
+
+        if (!diseases.length) {
+            res.status(404).json({ message: "No matching diseases found" });
+            return; 
+        }
+
+        res.json({ diseases });
+    } catch (error) {
+        res.status(500).json({ message: `An error occurred: ${error}` });
+    }
+};
+
+
+doctorRouter.get('/disease/:searchQuery', getDiseases);
+
+doctorRouter.post("/postdiseases", async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { disease, severity, doctorId } = req.body;
+
+        if (!disease || !severity || !doctorId) {
+            res.status(400).json({ message: "All fields are required: disease, severity, doctorId." });
+            return;
+        }
+
+        if (!mongoose.isValidObjectId(doctorId)) {
+            res.status(400).json({ message: "Invalid doctorId format." });
+            return;
+        }
+
+        await PostDiseasesModel.create({
+            doctorId: new mongoose.Types.ObjectId(doctorId),
+            disease,
+            severity
+        });
+
+        res.status(201).json({ message: "Disease added successfully" });
+
+    } catch (error) {
+        res.status(500).json({ message: `An error occurred: ${error}` });
+    }
+});
+
+doctorRouter.get('/postdiseases', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const diseaseData = await PostDiseasesModel.find();
+        
+        if (!diseaseData || diseaseData.length === 0) {
+            res.status(404).json({ message: 'No disease data found' });
+            return;
+        }
+
+        res.status(200).json(diseaseData);
+    } catch (error) {
+        console.error('Error fetching disease data:', error);
+        res.status(500).json({ 
+            message: 'Error fetching disease details',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+});
+
+
+export default doctorRouter;
+
+
+
+
+
+
 
 
 

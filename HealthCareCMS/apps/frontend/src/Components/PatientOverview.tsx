@@ -15,6 +15,13 @@ type PatientDetails = {
   };
 };
 
+type Prescription = {
+  _id: string;
+  doctorName: string;
+  date: string;
+  patientId: string;
+};
+
 const formatFullName = (name: string) => {
   return name
     .split(" ")
@@ -30,28 +37,34 @@ const formatDate = (dob: string) => {
 
 export const PatientOverview = () => {
   const { patientId = "", doctorId = "" } = useParams();
+  console.log(doctorId)
   const [patientDetails, setPatientDetails] = useState<PatientDetails | null>(null);
+  const [doctorName, setDoctorName] = useState<string>("");
   const [refresh, setRefresh] = useState(true);
   const [loader, setLoader] = useState(true);
   const navigate = useNavigate();
-  let doctorName:String="";
 
-  const getDoctorName = async () => {
-    try {
-      const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/prescription/doctor/${doctorId}`);
-      doctorName=response.data.name;
-    } catch (error) {
-      console.error("Error fetching patient details:", error);
+  // Fetch doctor name
+  useEffect(() => {
+    const getDoctorName = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/prescription/doctor/${doctorId}`);
+        setDoctorName(response.data.name);
+      } catch (error) {
+        console.error("Error fetching doctor details:", error);
+      }
+    };
+    if (doctorId) {
+      getDoctorName();
     }
-  };
-  getDoctorName();
+  }, [doctorId]);
 
+  // Fetch patient details
   useEffect(() => {
     const getPatientDetails = async () => {
       setLoader(true);
       try {
         const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/patientdetails/${patientId}`);
-        console.log(response.data);
         setPatientDetails(response.data);
       } catch (error) {
         console.error("Error fetching patient details:", error);
@@ -60,14 +73,33 @@ export const PatientOverview = () => {
       }
     };
 
-    getPatientDetails();
-
-    
-    
-    
+    if (patientId) {
+      getPatientDetails();
+    }
   }, [patientId, refresh]);
 
   const { prescriptions, loading: prescriptionsLoading } = usePrescriptions({ patientId, refresh });
+
+  const handleAddPrescription = async () => {
+    try {
+      const response = await axios.post(`${BACKEND_URL}cms/v1/doctor/prescription/presId`, {
+        patientId,
+        doctorName
+      });
+      
+      if (response.data.response._id) {
+        navigate(`/cms/v1/doctor/patient/prescription/${response.data.response._id}`);
+      } else {
+        console.error("No prescription ID received");
+      }
+    } catch (error) {
+      console.error("Error adding prescription:", error);
+    }
+  };
+
+  if (loader) {
+    return <Loader />;
+  }
 
   return (
     <div className="flex flex-col w-full max-w-[1390px] min-h-[650px] shadow-xl rounded-xl border border-slate-300 m-7 p-6 md:min-w-[768px] sm:min-w-full">
@@ -75,24 +107,16 @@ export const PatientOverview = () => {
         <div className="flex justify-between items-center w-full mb-4">
           <div className="text-xl font-semibold">
             <span>{formatFullName(patientDetails.newPatient.fullName)}{" "}</span>
-            <span className="text-gray-500 text-lg">({formatDate(patientDetails.newPatient.dob)})</span>
+            <span className="text-gray-500 text-lg">
+              ({formatDate(patientDetails.newPatient.dob)})
+            </span>
           </div>
 
           <Button
             title="Add Prescription"
             size="md"
             variant="secondary"
-            onClick={async () => {
-              try {
-                const response = await axios.post(`${BACKEND_URL}cms/v1/doctor/prescription/presId`, {
-                  patientId,
-                  doctorName:doctorName
-                });
-                navigate(`/cms/v1/doctor/patient/prescription/${response.data.response._id}`);
-              } catch (error) {
-                console.error("Error adding prescription:", error);
-              }
-            }}
+            onClick={handleAddPrescription}
           />
         </div>
       )}
@@ -104,19 +128,29 @@ export const PatientOverview = () => {
           <Loader />
         ) : (
           <div>
-             {prescriptions.map((prescription: { doctorName: string, date: string }) => (
-  <div key={prescription.doctorName} className="border flex justify-between items-center border-gray-300 rounded-md p-4 m-2">
-    <div>
-    {prescription.doctorName}
-     <p className="text-gray-500 text-sm">{prescription?.date.split("T")[0] || "Unnamed Prescription"}</p>
-     </div>
-     <div className="flex justify-end items-center  ">
-     <Button variant="secondary" size="md" title="Prescription" onClick={()=>{
-      navigate(`/cms/v1/doctor/patient/prescription/${prescription}`);
-     }}/>
-     </div>
-  </div>
-))}
+            {prescriptions.map((prescription: Prescription) => (
+              <div 
+                key={prescription._id} 
+                className="border flex justify-between items-center border-gray-300 rounded-md p-4 m-2"
+              >
+                <div>
+                  <div className="font-medium">{prescription.doctorName}</div>
+                  <p className="text-gray-500 text-sm">
+                    {prescription.date ? new Date(prescription.date).toLocaleDateString() : "No date"}
+                  </p>
+                </div>
+                <div className="flex justify-end items-center">
+                  <Button 
+                    variant="secondary" 
+                    size="md" 
+                    title="View Prescription"
+                    onClick={() => {
+                      navigate(`/cms/v1/doctor/patient/prescription/${prescription._id}`);
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
