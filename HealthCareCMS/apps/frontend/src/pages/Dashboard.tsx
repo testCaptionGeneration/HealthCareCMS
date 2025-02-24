@@ -1,45 +1,52 @@
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+
 import { NavbarComponent } from "../Components/NavbarComponent";
 import { QueueCard } from "../Components/DashboardBlockComponents/Queue";
 import { OutPatient } from "../Components/DashboardBlockComponents/OutPatient";
-import { useParams } from "react-router-dom";
-import axios from "axios";
 import { BACKEND_URL } from "../config";
 
 export const Dashboard = () => {
+  const { DoctorId = "" } = useParams();
   const [greeting, setGreeting] = useState("");
-  const { doctorId } = useParams<{ doctorId: string }>();
   const [doctorName, setDoctorName] = useState("");
 
   useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) {
-      setGreeting("Good Morning 🌅");
-    } else if (hour < 18) {
-      setGreeting("Good Afternoon ☀️");
-    } else {
-      setGreeting("Good Evening 🌙");
-    }
+    const setGreetingMessage = () => {
+      const hour = new Date().getHours();
+      if (hour < 12) {
+        setGreeting("Good Morning 🌅");
+      } else if (hour < 18) {
+        setGreeting("Good Afternoon ☀️");
+      } else {
+        setGreeting("Good Evening 🌙");
+      }
+    };
 
-    const getDoctorName = async () => {
+    const fetchDoctorName = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/${doctorId}`);
+        const response = await axios.get(
+          `${BACKEND_URL}cms/v1/doctor/prescription/doctorname/${DoctorId}`
+        );
         setDoctorName(response.data.name);
       } catch (error) {
         console.error("Error fetching doctor details:", error);
       }
     };
 
-    getDoctorName();
-  }, [doctorId]);
+    setGreetingMessage();
+    fetchDoctorName();
+  }, [DoctorId]);
 
   return (
-    <div className="text-slate-700 min-h-screen min-w-screen bg-slate-200">
+    <div className="text-slate-700 overflow-y-scroll min-h-screen min-w-screen bg-slate-200">
       <NavbarComponent />
 
-      <div className="flex w-full px-7 mt-5">
-        <h1 className="text-2xl font-semibold">
-          {greeting} Dr. {doctorName}
+      <div className="flex justify-center mt-6">
+        <h1 className="text-3xl md:text-2xl bg-white p-4 rounded-2xl shadow-lg font-semibold text-gray-800">
+          <span className="text-slate-700">{greeting}, </span>
+          <span className="font-bold text-slate-500">Dr. {doctorName}</span>
         </h1>
       </div>
 

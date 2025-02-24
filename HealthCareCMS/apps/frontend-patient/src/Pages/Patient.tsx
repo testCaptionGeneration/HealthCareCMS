@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { z } from "zod";
+import { Button } from "../Components/Button";
 
 // Define TypeScript types using zod
 export const PatientSchema = z.object({
@@ -74,7 +75,8 @@ const Patient: React.FC = () => {
           {patients.map((patient) => (
             <div
               key={patient._id}
-              className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300"
+              className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 border-2 border-[#3B9AB8] "
+              onClick={()=>handleClick(patient._id)}
             >
               <div className="flex flex-col items-center mb-4">
                 <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-3xl font-semibold shadow-md">
@@ -86,9 +88,12 @@ const Patient: React.FC = () => {
                 <p className="text-md text-gray-500">{patient.hospital}</p>
               </div>
 
-              <button  onClick={() => handleClick(patient._id)} className="w-full bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition-all shadow-md hover:shadow-lg ">
+              {/* <button  onClick={() => handleClick(patient._id)} className="w-full bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition-all shadow-md hover:shadow-lg ">
                 View Profile
-              </button>
+              </button> */}
+              <div className="flex justify-center">
+              
+              </div>
             </div>
           ))}
         </div>

@@ -34,8 +34,10 @@ const Upper: React.FC = () => {
   }, [patientId]);
 
   return (
+
     <div className="flex justify-center items-center ">
       <div className="relative w-[1390px] p-2 ">
+      
       <h2 className="text-xl font-semibold mb-4 mx-5">Ongoing Medication List</h2>
       <div className="flex-col  gap-4 w-full  bg-gray-100 border-b-blue-300 rounded-[31px] shadow-md  ">
         <div className=" pt-2 space-y-4">
@@ -68,7 +70,7 @@ const Upper: React.FC = () => {
           ) : (
             <p className="text-center text-gray-500">No prescriptions found</p>
           )}
-          <div className="flex pd-2 justify-center items-center my-4">
+          <div className="flex pd- justify-center items-center my-4">
             <Button onClick={()=>{
               navigate(`allprescriptions/?temp=${patientId}`);
               //patient-dashboard/?temp=${id}

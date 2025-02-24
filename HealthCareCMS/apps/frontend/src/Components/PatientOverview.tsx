@@ -47,7 +47,7 @@ export const PatientOverview = () => {
     const getPatientDetails = async () => {
       setLoader(true);
       try {
-        const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/patientdetails/${patientId}`);
+        const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/patientdetails/${patientId}`);  
         setPatientDetails(response.data);
       } catch (error) {
         console.error("Error fetching patient details:", error);
