@@ -1,0 +1,5 @@
+flask
+pandas
+openai
+rapidfuzz
+python-dotenv
