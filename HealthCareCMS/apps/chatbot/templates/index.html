@@ -123,7 +123,7 @@
 const userInput = document.getElementById("user-input");
 const sendButton = document.getElementById("send-button");
 
-let userChoice = ""; // Stores user's selection (substitute or specialist)
+let userChoice = ""; // Stores user's selection (substitute, specialist, or side effects)
 
 // Start chat with options
 async function startChat() {
@@ -133,6 +133,7 @@ async function startChat() {
     let options = `
       <button class="medicine-button" onclick="handleOption('substitute')">Find Medicine Substitute</button>
       <button class="medicine-button" onclick="handleOption('specialist')">Find Doctor Specialist</button>
+      <button class="medicine-button" onclick="handleOption('side_effects')">Check Side Effects</button>
     `;
 
     appendMessage(options, "bot");
@@ -144,13 +145,16 @@ async function startChat() {
 
 // Handle option selection
 function handleOption(choice) {
-  userChoice = choice; // Store user's choice
+  userChoice = choice;
   if (choice === "substitute") {
     appendMessage("You selected: Find Medicine Substitute", "user");
     appendMessage("Please enter the medicine name.", "bot");
   } else if (choice === "specialist") {
     appendMessage("You selected: Find Doctor Specialist", "user");
     appendMessage("Please enter your symptom or disease.", "bot");
+  } else if (choice === "side_effects") {
+    appendMessage("You selected: Check Side Effects", "user");
+    appendMessage("Please enter the medicine name.", "bot");
   }
 }
 
@@ -171,6 +175,8 @@ async function sendMessage() {
     fetchSpecialist(message);
   } else if (userChoice === "substitute") {
     fetchMatchingMedicines(message);
+  } else if (userChoice === "side_effects") {
+    fetchMatchingMedicinesForSideEffects(message);
   } else {
     appendMessage("Please select an option first!", "bot");
     startChat();
@@ -185,8 +191,6 @@ async function fetchSpecialist(query) {
     const data = await response.json();
     
     appendMessage(`${data.specialist}`, "bot");
-
-    // Ask if user wants more assistance
     askForMoreAssistance();
     
   } catch (error) {
@@ -232,11 +236,53 @@ async function selectMedicine(medicine) {
       appendMessage("No AI response available.", "bot");
     }
 
-    // Ask if user wants more assistance
     askForMoreAssistance();
-
   } catch (error) {
     appendMessage("Error fetching AI response.", "bot");
+    console.error(error);
+  }
+}
+
+// Fetch medicines for side effects (new function)
+async function fetchMatchingMedicinesForSideEffects(query) {
+  appendMessage("Searching for matching medicines...", "bot");
+  try {
+    const response = await fetch(`/search_medicines?query=${encodeURIComponent(query)}`);
+    const data = await response.json();
+
+    if (data.matching_medicines && data.matching_medicines.length > 0) {
+      let html = `<p>Select one of the following:</p>`;
+      data.matching_medicines.forEach(medicine => {
+        html += `<button class="medicine-button" onclick="checkSideEffects('${medicine.replace(/'/g, "\\'")}')">${medicine}</button> `;
+      });
+      appendMessage(html, "bot");
+    } else {
+      appendMessage("No matching medicines found.", "bot");
+    }
+  } catch (error) {
+    appendMessage("Error retrieving matching medicines.", "bot");
+    console.error(error);
+  }
+}
+
+// Fetch side effects for selected medicine (new function)
+async function checkSideEffects(medicine) {
+  appendMessage(`You selected: ${medicine}`, "user");
+  appendMessage("Checking for side effects...", "bot");
+
+  try {
+    const response = await fetch(`/get_side_effects?medicine=${encodeURIComponent(medicine)}`);
+    const data = await response.json();
+
+    if (data.ai_response) {
+      appendMessage(data.ai_response, "bot");
+    } else {
+      appendMessage("No side effects found.", "bot");
+    }
+
+    askForMoreAssistance();
+  } catch (error) {
+    appendMessage("Error fetching side effects.", "bot");
     console.error(error);
   }
 }
@@ -274,6 +320,7 @@ function appendMessage(content, sender) {
 
 // Start chat on page load
 window.onload = startChat;
+
 
   </script>
   
