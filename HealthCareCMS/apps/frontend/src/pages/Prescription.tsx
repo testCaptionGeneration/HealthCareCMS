@@ -1,18 +1,15 @@
-import { useEffect, useState } from "react";
-import {useParams } from "react-router-dom";
 import axios from "axios";
-
 import { Button } from "../Components/Inputs/Button";
 import { PageWrapper } from "../Wrapper/PageWrapper";
-import { CreatePrescription } from "../Creation/CreatePrescription";
-import { Loader } from "../Components/LoaderSckelton";
-import { AddDiseasePopup } from "../Components/Inputs/AddDiseasePopup"; 
-
 import { BACKEND_URL } from "../config";
-import { useMedicines } from "../hooks/useMedicines";
-
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { CreatePrescription } from "../Creation/CreatePrescription";
 import { AddIcon } from "../Icons/AddIcon";
+import { useMedicines } from "../hooks/useMedicines";
 import { CloseIcon } from "../Icons/CloseIcon";
+import { Loader } from "../Components/LoaderSckelton";
+import { AddDiseasePopup } from "../Components/Inputs/AddDiseasePopup";
 
 interface Patient {
     fullName: string;
@@ -31,44 +28,34 @@ const formatDate = (dob: string) => {
 };
 
 export const PrescriptionComponent = () => {
-    const { prescriptionId } = useParams<{ prescriptionId: string }>();
     const [prescriptionMedication, setPrescriptionMedication] = useState(false);
-    const [diseasePopupOpen, setDiseasePopupOpen] = useState(false); // Add state for disease popup
+    const [diseasePopupOpen, setDiseasePopupOpen] = useState(false);
     const [patientDetails, setPatientDetails] = useState<PatientDetailsResponse | null>(null);
     const [loader, setLoader] = useState(true);
+    const { prescriptionId } = useParams<{ prescriptionId: string }>();
     const [refresh, setRefresh] = useState(true);
-    const [content,setContent]=useState<string>('');
+    const [content, setContent] = useState<string>("");
 
     useEffect(() => {
+        console.log(prescriptionId);
         const fetchDetails = async () => {
-            if (!prescriptionId) return;
-
             setLoader(true);
             try {
                 if (!prescriptionId) return;
-                try {
-                    const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/prescription/${prescriptionId}`);
-                    console.log(response.data.response.patientId);
-                    const res = await axios.get<PatientDetailsResponse>(
-                        `${BACKEND_URL}cms/v1/doctor/patientdetails/${response.data.response.patientId}`
-                    );
-                    setPatientDetails(res.data);
-                } catch (error) {
-                    console.log(error);
-                }
+                const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/prescription/${prescriptionId}`);
+                console.log(response.data.response.patientId);
+                const res = await axios.get<PatientDetailsResponse>(
+                    `${BACKEND_URL}cms/v1/doctor/patientdetails/${response.data.response.patientId}`
+                );
+                setPatientDetails(res.data);
             } catch (error) {
-                console.error("Error fetching patient details:", error);
-            } finally {
-                setLoader(false);
+                console.error("An error occurred:", error);
             }
+            setLoader(false);
         };
 
         fetchDetails();
-
-        const handleMedicineUpdate = () => {
-            setRefresh((prev) => !prev);
-        };
-
+        const handleMedicineUpdate = () => setRefresh((prev) => !prev);
         window.addEventListener("medicineUpdated", handleMedicineUpdate);
         return () => window.removeEventListener("medicineUpdated", handleMedicineUpdate);
     }, [prescriptionId, refresh]);
@@ -82,38 +69,46 @@ export const PrescriptionComponent = () => {
         }
     };
 
-    const { medication, isLoading } = useMedicines({ prescriptionId: prescriptionId || "", refresh });
+    const { medication, isLoading } = useMedicines({
+        prescriptionId: prescriptionId || "",
+        refresh,
+    });
 
     return (
         <PageWrapper>
-            <div className="flex justify-center items-center mt-5 px-4  ">
-                <div className="relative overflow-y-scroll w-[1390px] h-[600px] p-2 rounded-lg border border-slate-200 shadow-md overflow-hidden bg-white">
+            <div className="flex justify-center items-start mt-5 px-4">
+                <div className="relative w-[1350px] h-auto p-4 rounded-lg border border-gray-300 shadow-lg bg-white">
                     <CreatePrescription open={prescriptionMedication} setOpen={setPrescriptionMedication} />
+                    <AddDiseasePopup open={diseasePopupOpen} setOpen={setDiseasePopupOpen} />
 
-                    <div className="p-6 border-2 border-[#3B9AB8] rounded-2xl ">
+                    {/* Patient Info Section */}
+                    <div className="p-6 border-2 border-[#3B9AB8] rounded-2xl flex justify-between items-center shadow-sm">
                         {loader ? (
                             <Loader />
                         ) : (
-                            <strong className="text-lg uppercase">
-                                {patientDetails?.newPatient.fullName},{" "}
-                                <span className="text-gray-500 text-sm">
-                                    ({formatDate(patientDetails?.newPatient.dob ?? "")})
-                                </span>
-                            </strong>
+                            <div className="text-lg font-semibold">
+                                <i>
+                                    {patientDetails?.newPatient.fullName},{" "}
+                                    <span className="text-gray-500 text-sm">
+                                        ({formatDate(patientDetails?.newPatient.dob ?? "")})
+                                    </span>
+                                </i>
+                            </div>
                         )}
-                    </div>
 
-                    <div className="p-6 border-2 border-[#3B9AB8] rounded-xl shadow-lg mt-4 bg-gray-50">
-                        <h3 className="text-xl font-semibold text-gray-800 mb-2">Treatment Plan & Advice</h3>
-                        <textarea
-                            className="w-full p-3 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3B9AB8]"
-                            rows={4}
-                            placeholder="Enter treatment advice and recommendations..."
-                            onChange={(e)=>setContent(e.target.value)}
+                        {/* Add Disease Button */}
+                        <Button
+                            startIcon={<AddIcon size={20} />}
+                            size="md"
+                            variant="secondary"
+                            title="Add Disease"
+                            onClick={() => setDiseasePopupOpen(true)}
+                            className="hover:bg-[#3B9AB8] hover:text-white transition duration-300"
                         />
                     </div>
 
-                    <div className="p-6 border-2 border-[#3B9AB8] rounded-xl shadow-lg mt-4">
+                    {/* Medication List Section */}
+                    <div className="p-6 border-2 border-[#3B9AB8] rounded-xl shadow-lg mt-6">
                         <div className="flex justify-between items-center border-b-2 border-[#3B9AB8] pb-2 mb-4">
                             <h3 className="text-xl font-semibold text-gray-800">Prescribed Medications</h3>
                             <Button
@@ -122,29 +117,28 @@ export const PrescriptionComponent = () => {
                                 variant="secondary"
                                 title="Add Medicine"
                                 onClick={() => setPrescriptionMedication(true)}
+                                className="hover:bg-[#3B9AB8] hover:text-white transition duration-300"
                             />
                         </div>
 
-                        <div className="max-h-85 overflow-y-auto overflow-x-auto">
-                            <div className="min-w-max w-full">
+                        <div className="max-h-[300px] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+                            <div className="min-w-full">
                                 <div className="grid grid-cols-6 bg-gray-200 p-3 font-semibold text-gray-700 text-center rounded-t-lg">
                                     <div className="p-2">Medication</div>
                                     <div className="p-2">Dose</div>
                                     <div className="p-2">Frequency</div>
                                     <div className="p-2">Duration</div>
                                     <div className="p-2">Meal Timing</div>
-                                    <div className="p-2">Action</div>
+                                    <div className="p-2">Actions</div>
                                 </div>
 
                                 {isLoading ? (
-                                    <div>
-                                        <Loader className="mx-7 my-7" />
-                                    </div>
+                                    <Loader className="mx-auto my-7" />
                                 ) : medication?.length > 0 ? (
-                                    medication.map((med: { medication: string; dose: string; doseUnit: string; morning: boolean; afternoon: boolean; evening: boolean; duration: string; durationUnit: string; mealStatus: string; _id: string }, index: number) => (
+                                    medication.map((med, index) => (
                                         <div
                                             key={index}
-                                            className="grid grid-cols-6 text-center p-3 text-gray-600 border-b odd:bg-gray-50 even:bg-white items-center"
+                                            className="grid grid-cols-6 text-center p-3 text-gray-600 border-b odd:bg-gray-50 even:bg-white"
                                         >
                                             <div className="p-2 font-medium">{med.medication}</div>
                                             <div className="p-2">{med.dose} {med.doseUnit}</div>
@@ -155,9 +149,10 @@ export const PrescriptionComponent = () => {
                                                 <Button
                                                     title="Delete"
                                                     startIcon={<CloseIcon size={28.85} />}
-                                                    variant="secondary"
+                                                    variant="danger"
                                                     size="md"
                                                     onClick={() => deleteMedicine(med._id)}
+                                                    className="hover:bg-red-600 hover:text-white transition duration-300"
                                                 />
                                             </div>
                                         </div>
@@ -168,16 +163,26 @@ export const PrescriptionComponent = () => {
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div className="flex justify-center p-3">
-                <Button variant="primary" title="Submit" size="md" onClick={()=>{
-                    axios.post(`${BACKEND_URL}cms/v1/doctor/treatmentcontent`,{
-                        prescriptionId:prescriptionId,
-                        content
-                    }).then(()=>alert("Prescription submitted successfully")).catch(()=>alert("Error in submitting prescription"));
-                }}/>
+                    {/* Treatment Advice Section */}
+                    <div className="p-6 border-2 border-[#3B9AB8] rounded-xl shadow-lg mt-6 bg-gray-50">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-2">Treatment Plan & Advice</h3>
+                        <textarea
+                            className="w-full p-3 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3B9AB8]"
+                            rows={4}
+                            placeholder="Enter treatment advice and recommendations..."
+                            onChange={(e) => setContent(e.target.value)}
+                        />
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="flex justify-center p-3">
+                        <Button variant="primary" title="Submit" size="md" onClick={() =>{ alert("Prescription submitted!");
+                            window.history.go(-1);
+                        }
+                        } />
+                    </div>
+                </div>
             </div>
         </PageWrapper>
     );

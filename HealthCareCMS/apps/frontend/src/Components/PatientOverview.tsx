@@ -39,7 +39,6 @@ const formatDate = (dob: string) => {
 
 export const PatientOverview = () => {
   const { patientId = "",doctorId = "" } = useParams();
-  console.log(doctorId)
   const [patientDetails, setPatientDetails] = useState<PatientDetails | null>(null);
   const [doctorName, setDoctorName] = useState<string>("");
   const [refresh, setRefresh] = useState(true);
@@ -133,7 +132,7 @@ export const PatientOverview = () => {
             title="Add Prescription"
             size="md"
             variant="secondary"
-            onClick={() => setOpen(true)}
+            onClick={()=>setOpen(true)}
           />
         </div>
       )}

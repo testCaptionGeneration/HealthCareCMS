@@ -7,8 +7,8 @@ import axios from "axios"
 import { useNavigate, useParams } from "react-router-dom"
 
 export const Search = ({ open, setOpen }: { open: boolean, setOpen: (value: boolean) => void }) => {
-    const doctorId = useParams().doctorId;
-
+    const doctorId = useParams().DoctorId;
+    console.log(doctorId);
     const phNumber=useRef<HTMLInputElement | null>(null);
     const dateOfBirth=useRef<HTMLInputElement | null>(null); 
     const navigate=useNavigate(); 

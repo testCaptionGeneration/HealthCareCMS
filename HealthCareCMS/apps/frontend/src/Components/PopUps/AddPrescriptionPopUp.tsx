@@ -2,18 +2,17 @@ import { useNavigate, useParams } from "react-router-dom";
 import { BACKEND_URL } from "../../config";
 import { Button } from "../Inputs/Button";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 export const AddPrescriptionPopUp = ({open,setOpen}:{open:boolean, setOpen:(vaue:boolean)=>void}) => {
     const { patientId = "", doctorId = "" } = useParams();
     const navigate=useNavigate();
-    let doctorName:String="";
-    let patientName:String="";
+    const [doctorName,setDoctorName]=useState("");
+    const [patientName,setPatientName]=useState("");
 
     const getPatientName=async ()=>{
       try{
         const response= await axios.get(`${BACKEND_URL}cms/v1/doctor/prescription/patientname/${patientId}`);
-        patientName=response.data.response.fullName;
-        console.log(patientName);
+        setPatientName(response.data.response.fullName);
     }
     catch(error){
       console.error("Error fetching patient details:", error);
@@ -25,8 +24,7 @@ export const AddPrescriptionPopUp = ({open,setOpen}:{open:boolean, setOpen:(vaue
       const getDoctorName = async () => {
         try {
           const response = await axios.get(`${BACKEND_URL}cms/v1/doctor/prescription/doctorname/${doctorId}`);
-          console.log(response)
-          doctorName = response.data.name;
+          setDoctorName(response.data.name);
         } catch (error) {
           console.error("Error fetching patient details:", error);
         }
@@ -34,7 +32,7 @@ export const AddPrescriptionPopUp = ({open,setOpen}:{open:boolean, setOpen:(vaue
       getDoctorName();
 
       
-    })
+    },[])
     
 
     return <div>{open && <div className="min-h-screen min-w-screen fixed inset-0  flex justify-center items-center z-50">
@@ -49,12 +47,13 @@ export const AddPrescriptionPopUp = ({open,setOpen}:{open:boolean, setOpen:(vaue
             <div className="flex p-2 justify-center">
                 <div className="mx-2">
                     <Button variant="secondary" title="Prescribe" size="md" onClick={async () => {
+                      console.log(doctorId,doctorName,patientName);
               try {
                 const response = await axios.post(`${BACKEND_URL}cms/v1/doctor/prescription/presId`, {
                   patientId,
-                  doctorName: doctorName,
-                  patientName: patientName,
-                  doctorId: doctorId,
+                  doctorId,
+                  doctorName,
+                  patientName,
                   date: new Date(Date.now())
                 });
                 navigate(`/cms/v1/doctor/patient/prescription/${response.data.response._id}`);

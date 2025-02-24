@@ -106,7 +106,7 @@ export const AnalysisPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <NavbarComponent doctorId={doctorId || ""} />
+      <NavbarComponent DoctorId={doctorId || ""} />
       <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <main className="flex-grow py-4 sm:py-6">
           <TypedDiseaseAnalysisPage

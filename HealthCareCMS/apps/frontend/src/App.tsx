@@ -29,8 +29,7 @@ function App() {
         <Route path="/cms/v1/doctor/search/patientDetails/:doctorId/:patientId" element={<PatientPage />} />
         <Route path="/cms/v1/doctor/analysis/:doctorId" element={<AnalysisPage/>}/>
 
-        <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
-        <Route path="/patient-dashboard" element={<PatientDashboard />} />
+      
       </Route>
     </Routes>
   </BrowserRouter>
