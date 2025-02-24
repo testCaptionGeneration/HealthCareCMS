@@ -57,14 +57,26 @@ const SignIn: React.FC = () => {
           body: JSON.stringify({ email: formData.email, password: formData.password }),
         }
       );
-
+        console.log("ress",response);
       const data = await response.json();
-      console.log(data.doctor.id);
+      console.log("data",data);
 
-      if (response) {
+      if (response.ok) {
         localStorage.setItem("token", data.token);
         toast.success("Sign in successful!");
-        navigate(formData.usertype === "doctor" ? `/cms/v1/doctor/dashboard/${data.doctor.id}` : "/patient-dashboard");
+        if(formData.usertype==="doctor"){
+          console.log("req aayi")
+          navigate(`/cms/v1/doctor/dashboard/${data.doctor.id}`);
+        }
+        else if(formData.usertype==="patient"){
+             console.log("patient k liye req aayi")
+          console.log("hirre")
+          setTimeout(() => {
+            window.location.href = `http://localhost:5174/patient/?temp=${data.patient.phone}`;
+          }, 100);
+          
+        }
+       
       } else {
         toast.error(data.message || "Sign in failed");
       }

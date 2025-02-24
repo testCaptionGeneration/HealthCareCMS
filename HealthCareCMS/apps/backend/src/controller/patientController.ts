@@ -73,6 +73,8 @@ export const patientSignin = async (req: Request, res: Response): Promise<void> 
         id: patient._id,
         fullName: patient.fullName,
         email: patient.email,
+      
+        phone:patient.phone,
       },
       token,
     });
@@ -81,3 +83,20 @@ export const patientSignin = async (req: Request, res: Response): Promise<void> 
     res.status(500).json({ message: "Server error occurred" });
   }
 };
+
+
+export const patientdetails = async (req: Request, res: Response): Promise<void> => {
+  const {phone}=req.params;
+ 
+  try{
+   const patients=await PatientModel.find({phone});
+   if(patients.length==0){
+    res.status(404).json({message:"no patients found"});
+   }
+   res.json(patients);
+  }
+  catch(error){
+res.status(500).json({message:"error fetching "})
+  }
+ 
+}

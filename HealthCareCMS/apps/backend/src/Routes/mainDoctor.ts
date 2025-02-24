@@ -5,6 +5,8 @@ const doctorRouter = Router();
 import mongoose from "mongoose";
 import { prescriptionRouter } from "./prescirption";
 import { DoctorModel } from "../models/DoctorSchema";
+import { Request, Response } from "express";
+import { ParsedQs } from "qs";
 const app = express();
 
 // app.use('/prescription',prescriptionRouter);
@@ -264,24 +266,22 @@ doctorRouter.get('/prescription/:presId', async (req, res) => {
     }
 })
 
-doctorRouter.get('/prescription/patient/:patientId', async (req, res) => {
-    const patientId = req.params.patientId;
-
+doctorRouter.get('/prescription/patient/:patientId', async (req: Request, res: Response) => {
+    const patientId: string = req.params.patientId;
+    const page: number = parseInt(req.query.page as string) || 1;
+    const limit: number = req.query.limit ? parseInt(req.query.limit as string) : 5;
+     
     try {
-        const response = await PrescirptionModel.find({
-            patientId: patientId
-        })
+        const response = await PrescirptionModel.find({ patientId })
+            .sort({ date: -1 })
+            .skip((page - 1) * limit)
+            .limit(limit);
 
-        res.json({
-            response
-        })
+        res.json({ response, currentPage: page, hasMore: response.length === limit });
+    } catch (error) {
+        res.status(500).json({ message: error});
     }
-    catch (error) {
-        res.status(500).json({
-            message: error
-        })
-    }
-})
+});
 
 doctorRouter.get('/prescription/doctor/:doctorId', async (req, res) => {
     const doctorId = req.params.doctorId;

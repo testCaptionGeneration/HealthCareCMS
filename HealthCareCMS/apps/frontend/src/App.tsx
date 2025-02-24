@@ -9,7 +9,6 @@ import PatientDashboard from "./Dashboard/PatientDashboard";
 import ProtectedRoute from "./Protected/ProtectedRoute";
 import { PatientPage } from './pages/Patient';
 import { PastPrescriptionPage } from './pages/PastPrescription';
-import { OutPatient } from './Components/DashboardBlockComponents/OutPatient';
 import { OutPatientPage } from './pages/OutPatient';
 
 function App() {
