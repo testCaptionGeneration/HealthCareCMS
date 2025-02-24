@@ -68,7 +68,7 @@ const Upper: React.FC = () => {
           ) : (
             <p className="text-center text-gray-500">No prescriptions found</p>
           )}
-          <div className="flex justify-center items-center my-4">
+          <div className="flex pd-2 justify-center items-center my-4">
             <Button onClick={()=>{
               navigate(`allprescriptions/?temp=${patientId}`);
               //patient-dashboard/?temp=${id}
