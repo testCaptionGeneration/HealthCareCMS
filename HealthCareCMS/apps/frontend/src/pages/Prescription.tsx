@@ -10,6 +10,7 @@ import { useMedicines } from "../hooks/useMedicines";
 import { CloseIcon } from "../Icons/CloseIcon";
 import { Loader } from "../Components/LoaderSckelton";
 import { AddDiseasePopup } from "../Components/Inputs/AddDiseasePopup";
+import { NavbarComponent } from "../Components/NavbarComponent";
 
 interface Patient {
     fullName: string;
@@ -35,6 +36,7 @@ export const PrescriptionComponent = () => {
     const { prescriptionId } = useParams<{ prescriptionId: string }>();
     const [refresh, setRefresh] = useState(true);
     const [content, setContent] = useState<string>("");
+    const [doctorId,setDoctorId]=useState("");
 
     useEffect(() => {
         console.log(prescriptionId);
@@ -55,6 +57,13 @@ export const PrescriptionComponent = () => {
         };
 
         fetchDetails();
+
+        const fetchDoctorId=async ()=>{
+            const response=await axios.get(`${BACKEND_URL}cms/v1/doctor/prescription/${prescriptionId}`);
+
+            setDoctorId(response.data.response.doctorId);
+        }
+        fetchDoctorId();
         const handleMedicineUpdate = () => setRefresh((prev) => !prev);
         window.addEventListener("medicineUpdated", handleMedicineUpdate);
         return () => window.removeEventListener("medicineUpdated", handleMedicineUpdate);
@@ -75,7 +84,8 @@ export const PrescriptionComponent = () => {
     });
 
     return (
-        <PageWrapper>
+        <div>
+        <NavbarComponent DoctorId={doctorId}/>
             <div className="flex justify-center items-start mt-5 px-4">
                 <div className="relative w-[1350px] h-auto p-4 rounded-lg border border-gray-300 shadow-lg bg-white">
                     <CreatePrescription open={prescriptionMedication} setOpen={setPrescriptionMedication} />
@@ -177,13 +187,17 @@ export const PrescriptionComponent = () => {
 
                     {/* Submit Button */}
                     <div className="flex justify-center p-3">
-                        <Button variant="primary" title="Submit" size="md" onClick={() =>{ alert("Prescription submitted!");
+                        <Button variant="primary" title="Submit" size="md" onClick={async () =>{ alert("Prescription submitted!");
+                        await axios.post(`${BACKEND_URL}cms/v1/doctor/treatmentcontent`,{
+                            prescriptionId,
+                            content
+                        })
                             window.history.go(-1);
                         }
                         } />
                     </div>
                 </div>
             </div>
-        </PageWrapper>
+            </div>
     );
 };
