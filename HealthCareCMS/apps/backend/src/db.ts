@@ -43,7 +43,6 @@ const PostDisease = new mongoose.Schema({
 
 
 
-
 const Prescirption=new Schema({
     doctorName:{type:String, required:true}, 
     patientName:{type:String, required:true},
