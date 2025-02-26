@@ -82,7 +82,7 @@ const SignUp: React.FC = () => {
           <img
             src="/assets/images/Signup_bg.png"
             alt="Frame"
-            className="min-h-full min-w-screen object-cover opacity-50 "
+            className="min-h-full min-w-screen object-cover opacity-70 "
           />
         </div>
         <div className="absolute bottom-0 left-0 w-full h-[635px]">
