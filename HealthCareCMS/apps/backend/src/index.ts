@@ -71,19 +71,3 @@ async function main() {
   app.listen(port, () => console.log(`App listening to ${process.env.PORT}`));
 }
 main();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

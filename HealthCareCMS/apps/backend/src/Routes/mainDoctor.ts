@@ -380,9 +380,9 @@ doctorRouter.get('/disease/:searchQuery', getDiseases);
 
 doctorRouter.post("/postdiseases", async (req: Request, res: Response): Promise<void> => {
     try {
-        const { disease, severity, doctorId } = req.body;
+        const { disease, severity, doctorId,prescriptionId } = req.body;
 
-        if (!disease || !severity || !doctorId) {
+        if (!disease || !severity || !doctorId||!prescriptionId) {
             res.status(400).json({ message: "All fields are required: disease, severity, doctorId." });
             return;
         }
@@ -391,11 +391,15 @@ doctorRouter.post("/postdiseases", async (req: Request, res: Response): Promise<
             res.status(400).json({ message: "Invalid doctorId format." });
             return;
         }
+        if(!mongoose.isValidObjectId(prescriptionId)){
+            res.status(400).json({message:'Invalid Prescription Id'});
+        }
 
         await PostDiseasesModel.create({
             doctorId: new mongoose.Types.ObjectId(doctorId),
             disease,
-            severity
+            severity,
+            prescriptionId
         });
 
         res.status(201).json({ message: "Disease added successfully" });
@@ -423,6 +427,7 @@ doctorRouter.get('/postdiseases', async (req: Request, res: Response): Promise<v
         });
     }
 });
+
 
 
 export default doctorRouter;

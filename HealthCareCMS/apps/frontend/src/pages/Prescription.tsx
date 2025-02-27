@@ -142,6 +142,7 @@ export const PrescriptionComponent = () => {
                                 {isLoading ? (
                                     <Loader className="mx-auto my-7" />
                                 ) : medication?.length > 0 ? (
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     medication.map((med:any, index) => (
                                         <div
                                             key={index}

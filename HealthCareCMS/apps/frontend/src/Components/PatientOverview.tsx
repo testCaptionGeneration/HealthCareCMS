@@ -86,14 +86,7 @@ export const PatientOverview = () => {
     }
   }, [patientId, refresh]);
 
-  const { prescriptions = [], loading: prescriptionsLoading, page, setPage } = usePrescriptions({
-    patientId,
-    refresh,
-  });
-
-  useEffect(() => {
-    setPage(pages);
-  }, [pages]);
+  const { prescriptions = [], loading: prescriptionsLoading } = usePrescriptions({ patientId, refresh });
 
   const sortedPrescriptions = prescriptions
     ? [...prescriptions].sort((a: Prescription, b: Prescription) => {
@@ -105,12 +98,12 @@ export const PatientOverview = () => {
 
   const handleAddPrescription = async () => {
     try {
-      const response = await axios.post(`${BACKEND_URL}cms/v1/doctor/prescription`, {
+      const response = await axios.post(`${BACKEND_URL}cms/v1/doctor/prescription/presId`, {
         patientId,
-        doctorName,
+        doctorName
       });
-
-      if (response.data.response?._id) {
+      
+      if (response.data.response._id) {
         navigate(`/cms/v1/doctor/patient/prescription/${response.data.response._id}`);
       } else {
         console.error("No prescription ID received");

@@ -8,6 +8,7 @@ export const AddPrescriptionPopUp = ({open,setOpen}:{open:boolean, setOpen:(vaue
     const navigate=useNavigate();
     const [doctorName,setDoctorName]=useState("");
     const [patientName,setPatientName]=useState("");
+    
 
     const getPatientName=async ()=>{
       try{

@@ -35,7 +35,8 @@ const DiseaseSchema = new Schema({
 const PostDisease = new mongoose.Schema({
     doctorId: { type: mongoose.Types.ObjectId, required: true, ref: "Doctor" },
     disease: { type: String, required: true, trim: true, lowercase: true },
-    severity: { type: String, required: true, trim: true, lowercase: true }
+    severity: { type: String, required: true, trim: true, lowercase: true },
+    prescriptionId:{type:mongoose.Types.ObjectId,required:true,ref:'Prescription'}
 });
 
 
