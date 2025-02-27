@@ -7,7 +7,8 @@ interface InputFieldProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
-  title?: string; 
+  title?: string;
+  max?: string; // Optional max attribute
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -18,10 +19,11 @@ const InputField: React.FC<InputFieldProps> = ({
   onChange,
   placeholder,
   title,
+  max, 
 }) => {
   return (
     <div className="relative">
-      <label className=" font-medium text-[#333] text-md">{label}</label>
+      <label className="font-medium text-[#333] text-md">{label}</label>
       <input
         type={type}
         name={name}
@@ -30,9 +32,10 @@ const InputField: React.FC<InputFieldProps> = ({
         value={value}
         onChange={onChange}
         title={title}
+        {...(max ? { max } : {})} // Conditionally add max if provided
       />
       {title && (
-        <span className="absolute top-full left-0 text-xs text-gray-500 mt-1">{title}</span> // Validation hint under the field
+        <span className="absolute top-full left-0 text-xs text-gray-500 mt-1">{title}</span>
       )}
     </div>
   );

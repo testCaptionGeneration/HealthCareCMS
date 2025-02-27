@@ -19,9 +19,9 @@ export const NavbarComponent = () => {
           </div>
 
           <div className="flex items-center">
-            <div className={`${defaultStyle} cursor-pointer`}>Records</div>
+            {/* <div className={`${defaultStyle} cursor-pointer`}>Records</div>
             <div className={`${defaultStyle} cursor-pointer`}>Connect</div>
-            <div className={`${defaultStyle} cursor-pointer`}>Profile</div>
+            <div className={`${defaultStyle} cursor-pointer`}>Profile</div> */}
             <Button size="md" variant="primary" title="Logout" />
           </div>
         </div>

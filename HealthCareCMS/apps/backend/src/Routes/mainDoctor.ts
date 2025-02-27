@@ -197,7 +197,7 @@ doctorRouter.post('/disease', async (req, res) => {
         res.status(502).json({
             message: `An error occured : ${error}`
         })
-    }
+    }   
 })
 
 doctorRouter.get('/search/:phone/:dob', (req, res) => {

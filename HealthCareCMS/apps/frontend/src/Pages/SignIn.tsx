@@ -7,6 +7,7 @@ import InputField from "../Components/InputField";
 import UserTypeSelector from "../Components/UserType";
 import FormButton from "../Buttons/FormButton";
 import { LogoIcon } from "../Icons/LogoIcon";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 const SignIn: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -16,11 +17,19 @@ const SignIn: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading ,setLoading]=useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setServerError(null);
+  };
+
+  const handleTogglePassword = () => {
+    setShowPassword((prev) => !prev);
   };
 
   const validateForm = async () => {
@@ -45,80 +54,66 @@ const SignIn: React.FC = () => {
   };
 
   const handleSignIn = async () => {
+
     const isValid = await validateForm();
     if (!isValid) return;
 
     try {
-        const response = await fetch(
-            `http://localhost:3000/api/${formData.usertype === "doctor" ? "doctors" : "patients"}/signin`,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: formData.email, password: formData.password }),
-            }
-        );
-
-        const data = await response.json();
-
-        if (response.ok) {
-            localStorage.setItem("token", data.token);
-            
-            // Store doctorId if user is a doctor
-            if (formData.usertype === "doctor" && data.doctor?.id) {
-                localStorage.setItem("doctorId", data.doctor.id);
-                console.log("Doctor ID stored:", data.doctor.id);
-            }
-
-            toast.success("Sign in successful!");
-            navigate(formData.usertype === "doctor" ? `/cms/v1/doctor/dashboard/${data.doctor.id}` : "/patient-dashboard");
-        } else {
-            toast.error(data.message || "Sign in failed");
+      setLoading(true);
+      const response = await fetch(
+        `http://localhost:3000/api/${formData.usertype === "doctor" ? "doctors" : "patients"}/signin`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: formData.email, password: formData.password }),
         }
-      
-       
+      );
+
+      const data = await response.json();
+      console.log("Full backend response:", data);
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        toast.success("Sign in successful!");
-        if(formData.usertype==="doctor"){
-          console.log("req aayi")
-          navigate(`/cms/v1/doctor/dashboard/${data.doctor.id}`);
+
+        if (formData.usertype === "doctor" && data.doctor?.id) {
+          localStorage.setItem("doctorId", data.doctor.id);
+          console.log("Doctor ID stored:", data.doctor.id);
         }
-        else if(formData.usertype==="patient"){
-             console.log("patient k liye req aayi")
-          console.log("hirre")
+
+        toast.success("Sign in successful!");
+        if (formData.usertype === "doctor") {
+          navigate(`/cms/v1/doctor/dashboard/${data.doctor.id}`);
+        } else if (formData.usertype === "patient") {
           setTimeout(() => {
             window.location.href = `http://localhost:5174/patient/?temp=${data.patient.phone}`;
           }, 100);
-          
         }
-       
       } else {
+        console.log("Backend error message:", data.message);
+        setServerError(data.message || "Invalid email or password");
         toast.error(data.message || "Sign in failed");
       }
-    } catch {
-      toast.error("An error occurred during sign in");
+    } catch (error) {
+      console.error("Network error:", error);
+      setServerError("An error occurred during sign-in. Please try again.");
+      toast.error("An error occurred during sign-in.");
     }
-};
+    finally{
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="flex bg-[#F9FAFB] min-h-screen fixed ">
+    <div className="flex bg-[#F9FAFB] min-h-screen fixed">
       <div className="relative w-[45%] h-[950px]">
         <div className="absolute inset-0">
-        <div className="object-cover opacity-70  ">
-          <img
-            src="/assets/images/Signup_bg.png"
-            alt="Frame"
-            className="min-h-screen  min-w-screen object-cover "
-          />
+          <div className="object-cover opacity-70">
+            <img src="/assets/images/Signup_bg.png" alt="Frame" className="min-h-screen min-w-screen object-cover" />
           </div>
         </div>
       </div>
-    
 
-
-
-      <div className="min-w-screen flex flex-col justify-center items-center px-12 absolute py-10 ">
+      <div className="min-w-screen flex flex-col justify-center items-center px-12 absolute py-10">
         <div className="flex items-center justify-center mb-2">
           <LogoIcon size={28.85} />
           <h1 className="lg:text-4xl sm:text-2xl font-semibold text-[#3B9AB8] text-center">Healthcare CMS</h1>
@@ -154,17 +149,32 @@ const SignIn: React.FC = () => {
             />
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
 
-            <InputField
-              label="Password"
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
+            <div className="relative">
+              <InputField
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+              />
+              <button
+                type="button"
+                onClick={handleTogglePassword}
+                className="absolute right-3 top-10 text-gray-500 hover:text-gray-700 flex items-center bottom-3"
+              >
+                {showPassword ? <AiFillEyeInvisible size={20} /> : <AiFillEye size={20} />}
+              </button>
+            </div>
+            <FormButton
+              onClick={handleSignIn}
+              text={`Sign In as ${formData.usertype.charAt(0).toUpperCase() + formData.usertype.slice(1)}`}
+              isLoading={loading}
             />
             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
 
-            <FormButton onClick={handleSignIn} text={`Sign In as ${formData.usertype.charAt(0).toUpperCase() + formData.usertype.slice(1)}`} />
+            {serverError && <p className="text-red-500 font-bold p- rounded text-center mt-2">{serverError}</p>}
+
           </form>
         </div>
       </div>
@@ -173,3 +183,4 @@ const SignIn: React.FC = () => {
 };
 
 export default SignIn;
+ 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { CloseIcon } from "../../Icons/CloseIcon";
 
 interface Disease {
     disease: string;
@@ -23,16 +24,12 @@ export const AddDiseasePopup: React.FC<AddDiseasePopupProps> = ({ open, setOpen 
     const searchRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const fetchDoctorId = () => {
-            const storedDoctorId = localStorage.getItem("doctorId");
-            if (storedDoctorId) {
-                setDoctorId(storedDoctorId);
-            } else {
-                setError("Doctor ID not found. Please log in again.");
-            }
-        };
-
-        fetchDoctorId();
+        const storedDoctorId = localStorage.getItem("doctorId");
+        if (storedDoctorId) {
+            setDoctorId(storedDoctorId);
+        } else {
+            setError("Doctor ID not found. Please log in again.");
+        }
     }, []);
 
     useEffect(() => {
@@ -122,31 +119,22 @@ export const AddDiseasePopup: React.FC<AddDiseasePopupProps> = ({ open, setOpen 
     return (
         <div className="min-h-screen min-w-screen flex inset-0 fixed justify-center items-center z-50">
             <div className="absolute inset-0 backdrop-blur-sm bg-black/30"></div>
-            <div className="relative bg-white p-10 rounded-2xl w-[550px] shadow-xl">
-                <button 
-                    onClick={() => setOpen(false)} 
-                    className="absolute right-0 top-0 p-2 text-gray-400 hover:text-gray-700 duration-300 cursor-pointer"
-                >
-                    <svg 
-                        className="w-6 h-6" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                    >
-                        <path 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round" 
-                            strokeWidth={2} 
-                            d="M6 18L18 6M6 6l12 12" 
-                        />
-                    </svg>
-                </button>
-                
-                <div className="flex-col justify-center font-bold text-2xl text-gray-700 mb-6">
-                    <div>Add Disease</div>
-                    <div className="font-medium text-sm text-gray-500 mt-1">
-                        Please select disease details below
+            <div className="relative bg-white p-10 rounded-2xl w-[520px] h-[290px] shadow-xl">
+                {/* Header Section with Title and Close Button */}
+                <div className="flex items-center justify-between mb-4 ">
+                    <div className="font-bold text-2xl text-gray-700">
+                        Add Disease
+                        <div className="font-medium text-sm text-gray-500 mt-1">
+                            Please select disease details below
+                        </div>
                     </div>
+
+                    <button
+                        onClick={() => setOpen(false)}
+                        className="p-2 text-gray-400 hover:text-gray-700 duration-300 cursor-pointer right-1 top-1 absolute"
+                    >
+                        <CloseIcon size={28} />
+                    </button>
                 </div>
 
                 <div className="flex space-x-6 mb-6">
@@ -212,8 +200,8 @@ export const AddDiseasePopup: React.FC<AddDiseasePopupProps> = ({ open, setOpen 
                 )}
 
                 <div className="flex justify-center mt-8">
-                    <button 
-                        onClick={handleAddDisease} 
+                    <button
+                        onClick={handleAddDisease}
                         disabled={loading}
                         className={`px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
