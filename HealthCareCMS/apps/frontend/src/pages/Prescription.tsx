@@ -36,6 +36,7 @@ export const PrescriptionComponent = () => {
     const [refresh, setRefresh] = useState(true);
     const [content, setContent] = useState<string>("");
     const [doctorId,setDoctorId]=useState("");
+    const [disease,setDisease]=useState([]);
 
     useEffect(() => {
         console.log(prescriptionId);
@@ -63,10 +64,22 @@ export const PrescriptionComponent = () => {
             setDoctorId(response.data.response.doctorId);
         }
         fetchDoctorId();
+
+        
+
         const handleMedicineUpdate = () => setRefresh((prev) => !prev);
         window.addEventListener("medicineUpdated", handleMedicineUpdate);
         return () => window.removeEventListener("medicineUpdated", handleMedicineUpdate);
     }, [prescriptionId, refresh]);
+
+
+    const fetchDiseases=async ()=>{
+        const response= await axios.get(`${BACKEND_URL}cms/v1/doctor/prescription/diseases/${prescriptionId}`);
+        setDisease(response.data.disease);
+        console.log(disease);
+    }
+
+    fetchDiseases();
 
     const deleteMedicine = async (medicineId: string) => {
         try {
@@ -75,7 +88,7 @@ export const PrescriptionComponent = () => {
         } catch (error) {
             console.error("Error deleting medicine:", error);
         }
-    };
+    };  
 
     const { medication, isLoading } = useMedicines({
         prescriptionId: prescriptionId || "",
@@ -101,11 +114,11 @@ export const PrescriptionComponent = () => {
                                     <span className="text-gray-500 text-sm">
                                         ({formatDate(patientDetails?.newPatient.dob ?? "")})
                                     </span>
+                                    <div>{disease.map((disease,i,arr)=>(<span key={i}>{`${disease}${i!=arr.length-1?", ":"."}`}</span>))}</div>
                                 </i>
                             </div>
                         )}
 
-                        {/* Add Disease Button */}
                         <Button
                             startIcon={<AddIcon size={20} />}
                             size="md"

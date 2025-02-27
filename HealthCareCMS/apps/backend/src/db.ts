@@ -7,11 +7,16 @@ const PatientSchema = new Schema({
     gender: String,
     number: String,
     date: { type: Date, default: Date.now() },
+    
+
     // userId:{type:mongoose.Types.ObjectId, required:true}
 });
 
-
-
+const AllowedDoctorSchema = new mongoose.Schema({
+    allowedDoctor: String,
+    patientadds:String
+});
+export const AllowedDoctorModel = mongoose.model("AllowedDoctor", AllowedDoctorSchema);
 const MedicationScehma = new Schema({
     prescriptionId: { type: mongoose.Types.ObjectId,required:true },
     medication: String,
@@ -48,7 +53,7 @@ const Prescirption=new Schema({
     patientName:{type:String, required:true},
     doctorId:{type:mongoose.Types.ObjectId, required:true},
     patientId:{type:mongoose.Types.ObjectId, required:true},
-    date:{type:Date, default:new Date(Date.now()), reqired:true},
+    date:{type:Date, default:new Date(Date.now()), required:true},
 })
 
 const TreatmentSchema=new Schema({

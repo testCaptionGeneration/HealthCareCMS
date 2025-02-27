@@ -47,7 +47,7 @@ export const AddDiseasePopup: React.FC<AddDiseasePopupProps> = ({ open, setOpen 
                 );
                 setDiseaseList(response.data.diseases?.map((d: Disease) => d.disease) || []);
             } catch (error) {
-                console.error("Error fetching diseases:", error);
+                console.error("Error fetching diseasese:", error);
                 setError("Failed to fetch diseases. Please try again.");
             }
         };

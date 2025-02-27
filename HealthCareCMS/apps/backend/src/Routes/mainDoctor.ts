@@ -1,16 +1,18 @@
 import express, { Router } from "express";
-import { DiseaseModel, MedicationModel, PatientModel, PostDiseasesModel, PrescirptionModel,TreatmentModel } from "../db";
+import { AllowedDoctorModel,DiseaseModel, MedicationModel, PatientModel, PostDiseasesModel, PrescirptionModel,TreatmentModel } from "../db";
 
 import { stringify } from "querystring";
 const doctorRouter = Router();
 import mongoose from "mongoose";
 
-import { DoctorModel } from "../models/DoctorSchema";
+import { DoctorModel, TrimmedDoctorModel } from "../models/DoctorSchema";
 import { Request, Response } from "express";
 const app=express();
 const cors = require('cors');
 app.use(cors());
 import { ParsedQs } from "qs";
+import { doctorSignupSchema } from "../validation";
+import doctorrouter from "./doctor";
 
 
 // app.use('/prescription',prescriptionRouter);
@@ -43,6 +45,69 @@ doctorRouter.post('/patient', async (req, res) => {
     }
 
 })
+
+
+doctorRouter.post("/allowed", async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { patientId, doctorId } = req.body;
+        console.log(patientId, doctorId);
+        if (!patientId || !doctorId) {
+          res.status(400).json({ error: "Patient ID and Doctor ID are required" });
+          return;
+        }
+    
+        
+    
+       const check=await AllowedDoctorModel.findOne({ allowedDoctor:doctorId,patientadds:patientId});
+       if(!check){
+           await AllowedDoctorModel.create({
+               allowedDoctor:doctorId,
+               patientadds:patientId
+           })
+
+           
+       }
+
+    
+        res.json({ message: "Doctor access granted successfully" });
+      } catch (error) {
+        console.error("Error allowing doctor access:", error);
+        res.status(500).json({ error: "Internal server error" });
+      }
+    });
+
+
+    doctorRouter.delete("/remove", async (req: Request, res: Response): Promise<void> => {
+        try {
+          const { patientId, doctorId } = req.body;
+      
+          if (!patientId || !doctorId) {
+             res.status(400).json({ error: "Patient ID and Doctor ID are required" });
+                return;
+            }
+      
+          const patient = await PatientModel.findById(patientId);
+          if (!patient) {
+             res.status(404).json({ error: "Patient not found" });
+                return;
+            }
+      
+          // Remove the doctorId from AllowedDoctorIds
+          //@ts-ignore
+          patient.AllowedDoctorIds = patient.AllowedDoctorIds.filter(id => !id.equals(doctorId));
+          
+          await patient.save();
+      
+          res.json({ message: "Doctor access removed successfully" });
+        } catch (error) {
+          console.error("Error removing doctor access:", error);
+          res.status(500).json({ error: "Internal server error" });
+        }
+      });
+      
+
+  
+  
 
 doctorRouter.get('/patientDetails/:id', async (req, res) => {
     try {
@@ -428,6 +493,71 @@ doctorRouter.get('/postdiseases', async (req: Request, res: Response): Promise<v
     }
 });
 
+doctorRouter.get('/prescription/diseases/:prescriptionId', async (req, res) => {
+    const prescirptionId=req.params.prescriptionId;
+
+    try {
+        const response = await PostDiseasesModel.find({
+            prescriptionId: prescirptionId
+        })
+
+        const disease=response.map((disease)=>{
+            return disease.disease
+        });
+
+        res.json({
+            disease
+        })
+    }
+    catch (error) {
+        res.json({
+            message: error
+        })
+    }
+})
+
+
+
+
+
+const getDoctors = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const searchQuery = req.params.searchQuery;
+
+        const doctors = await DoctorModel.find({
+            fullName: { $regex: new RegExp(searchQuery, 'i') }
+        });
+        
+
+        if (!doctors.length) {
+            res.status(404).json({ message: "No matching diseases found" });
+            return; 
+        }
+
+        res.json({ doctors });
+    } catch (error) {
+        res.status(500).json({ message: `An error occurred: ${error}` });
+    }
+};
+
+doctorRouter.get('/doctors/:searchQuery', getDoctors);
+
+doctorRouter.get('/hospitals/:searchQuery',(req,res)=>{
+    try {
+        const searchQuery = req.params.searchQuery;
+        DoctorModel.find({
+            hospitalName: { $regex: new RegExp(searchQuery, 'i') }
+        }).then((result) => {
+            res.json({
+                result
+            })
+        })
+    } catch (error) {
+        res.json({
+            error
+        })
+    }
+})
 
 
 export default doctorRouter;

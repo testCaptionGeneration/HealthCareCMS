@@ -106,12 +106,9 @@ export const CreatePrescription = ({ open, setOpen  }: { open: boolean, setOpen:
                                 <div className="w-1/4 md:w-auto flex items-center">
                                     <Input placeholder="Duration" size="small" type="number" onChange={(e) => setDuration(e.target.value)} />
                                     <select onChange={(e) => setDurationUnit(e.target.value)} name="DurationUnit" id="durationunit" className='h-[40px] shadow-md w-32 mx-2 rounded-md p-1 focus:outline-none'>
-                                        <option value="day">Day</option>
-                                        <option value="days">Days</option>
-                                        <option value="month">Month</option>
-                                        <option value="months">Months</option>
-                                        <option value="Year">Year</option>
-                                        <option value="Years">Years</option>
+                                        <option value="days">Day(s)</option>
+                                        <option value="months">Month(s)</option>
+                                        <option value="Years">Year(s)</option>
                                     </select>
                                 </div>
                             </div>
